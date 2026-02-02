@@ -15,7 +15,7 @@ namespace Backend.Models
 
     public class UserCapability : BaseModel
     {
-        public Guid UserId { get; set; }
+        public string UserId { get; set; } = null!;
         public string CapabilityKey { get; set; } = null!;
         public CapabilityScopeType ScopeType { get; set; } = CapabilityScopeType.Global;
         public Guid? ScopeId { get; set; }

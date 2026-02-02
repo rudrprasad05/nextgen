@@ -17,7 +17,7 @@ namespace Backend.Models
     {
         public string Name { get; set; } = null!;
         public string Slug { get; set; } = null!;
-        public Guid OwnerId { get; set; }
+        public string OwnerId { get; set; } = null!;
         public SiteStatus Status { get; set; } = SiteStatus.Draft;
 
         public AppUser Owner { get; set; } = null!;

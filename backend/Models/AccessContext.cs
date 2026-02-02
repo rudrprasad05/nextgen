@@ -8,7 +8,7 @@ namespace Backend.Models
 {
     public class AccessContext : BaseModel
     {
-        public Guid UserId { get; set; }
+        public string UserId { get; set; } = null!;
 
         public List<string>? AllowedIps { get; set; }
         public List<string>? DeniedIps { get; set; }
