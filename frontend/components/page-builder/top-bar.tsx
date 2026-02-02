@@ -36,6 +36,7 @@ export function TopBar() {
   return (
     <header className="h-14 bg-background border-b border-border px-4 flex items-center justify-between">
       <div className="flex items-center gap-2">
+        {/* <LeftArroe */}
         <h1 className="text-lg font-semibold text-foreground">Page Builder</h1>
         <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
           {schema.elements.length} elements

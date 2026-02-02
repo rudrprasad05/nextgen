@@ -1,9 +1,10 @@
 export type Site = {
-  id: string
-  name: string
-  updatedAt: string
-  status: "draft" | "published"
-}
+  id: string;
+  name: string;
+  updatedAt: string;
+  status: "draft" | "published";
+  screenshot?: string | null;
+};
 
 export const mockSites: Site[] = [
   {
@@ -30,4 +31,4 @@ export const mockSites: Site[] = [
     updatedAt: "2026-01-20T11:00:00Z",
     status: "draft",
   },
-]
+];

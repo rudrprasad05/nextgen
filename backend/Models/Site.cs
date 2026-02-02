@@ -19,7 +19,7 @@ namespace Backend.Models
         public string Slug { get; set; } = null!;
         public string OwnerId { get; set; } = null!;
         public SiteStatus Status { get; set; } = SiteStatus.Draft;
-
+        public Media? Screenshot { get; set; } = null;
         public AppUser Owner { get; set; } = null!;
         public ICollection<Page> Pages { get; set; } = new List<Page>();
     }

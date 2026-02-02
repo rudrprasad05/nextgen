@@ -16,7 +16,7 @@ export function SideBarLogo() {
       </div>
       <div className="flex flex-col">
         <span className="text-sm font-semibold ">
-          {companyName != "undefined" ? companyName.toUpperCase() : "TapNGo"}
+          {companyName != "undefined" ? companyName.toUpperCase() : "NextGen"}
         </span>
         <Label className="text-xs ">Dashboard</Label>
       </div>
@@ -31,7 +31,7 @@ export function PostSidebarLogo() {
         <Wrench className="h-4 w-4" />
       </div>
       <div className="flex flex-col">
-        <span className="text-sm font-semibold text-gray-900">Crumb Code</span>
+        <span className="text-sm font-semibold text-gray-900">NextGen</span>
         <span className="text-xs text-gray-500">Post Panel</span>
       </div>
     </div>
