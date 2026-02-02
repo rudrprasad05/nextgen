@@ -1,5 +1,0 @@
-[00:02:57.667] Server  ERROR   Error: ENOENT: no such file or directory, scandir '/Users/rudr/Desktop/RUDR/lockin/nextgen/frontend/generated/app'
-[00:02:57.677] Server  ERROR   ⨯ "unhandledRejection:" Error: ENOENT: no such file or directory, scandir '/Users/rudr/Desktop/RUDR/lockin/nextgen/frontend/generated/app'
-[00:02:57.683] Server  ERROR   ⨯ "unhandledRejection: " Error: ENOENT: no such file or directory, scandir '/Users/rudr/Desktop/RUDR/lockin/nextgen/frontend/generated/app'
-[00:02:57.764] Server  ERROR   ⨯ PageNotFoundError: Cannot find module for page: route not found /_not-found/page
-[00:03:00.768] Server  LOG     ○ Compiling /_error ...
