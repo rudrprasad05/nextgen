@@ -13,101 +13,96 @@ import { ArrowUpDown, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { NewSiteCard } from "./new-site-card";
 import { SiteCard } from "./site-card";
-
-type SortOption = "recent" | "alphabetical";
+import { H1, H3, LargeText, P } from "../font/Fonts";
+import { ApiResponse, FIVE_MINUTE_CACHE, QueryObject } from "@/lib/models";
+import { GetAllSites } from "@/actions/site";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { NewSiteButton } from "./new-site-button";
+import { LoadingCard, NoDataContainer } from "../global/LoadingContainer";
+import PaginationSection from "../global/PaginationSection";
+import { SectionHeader } from "../global/SectionHeader";
 
 export function SiteGrid() {
-  const [sites, setSites] = useState<Site[]>(mockSites);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("recent");
+  const [pagination, setPagination] = useState<QueryObject>({
+    pageNumber: 1,
+    totalCount: 0,
+    pageSize: 8,
+    totalPages: 0,
+  });
 
-  const filteredAndSortedSites = useMemo(() => {
-    let result = sites.filter((site) =>
-      site.name.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
-
-    if (sortBy === "recent") {
-      result = result.sort(
-        (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-      );
-    } else {
-      result = result.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    return result;
-  }, [sites, searchQuery, sortBy]);
-
-  const handleCreateSite = (): string => {
-    const newSite: Site = {
-      id: `site-${Date.now()}`,
-      name: `Untitled Site ${sites.length + 1}`,
-      updatedAt: new Date().toISOString(),
-      status: "draft",
-    };
-    setSites((prev) => [newSite, ...prev]);
-    return newSite.id;
-  };
-
-  const isEmpty = sites.length === 0;
-  const noResults = filteredAndSortedSites.length === 0 && !isEmpty;
+  const query = useQuery({
+    queryKey: ["admin-site", pagination],
+    queryFn: () => GetAllSites({ ...pagination }),
+    staleTime: FIVE_MINUTE_CACHE,
+  });
 
   return (
-    <div className="flex flex-1 flex-col ">
-      <header className="flex h-14 items-center justify-between border-b border-primary/20 px-6">
-        <h1 className="text-lg font-semibold">Your Sites</h1>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Search sites..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-9 w-56 pl-9"
-            />
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2 bg-transparent"
-              >
-                <ArrowUpDown className="h-4 w-4" />
-                {sortBy === "recent" ? "Recent" : "A-Z"}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setSortBy("recent")}>
-                Most Recent
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSortBy("alphabetical")}>
-                Alphabetical
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </header>
+    <>
+      <SectionHeader
+        pagination={pagination}
+        setPagination={setPagination}
+        newButton={<NewSiteButton />}
+      >
+        <H1>Your Sites</H1>
+        <LargeText className="text-muted-foreground">
+          Begin building your website by selecting a site from the list
+        </LargeText>
+      </SectionHeader>
 
-      <main className="flex-1 overflow-auto p-6">
-        {isEmpty && (
-          <div className="mb-4 text-center text-sm text-muted-foreground">
-            Create your first site to get started.
-          </div>
-        )}
-        {noResults && (
-          <div className="mb-4 text-center text-sm text-muted-foreground">
-            No sites found matching "{searchQuery}"
-          </div>
-        )}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          <NewSiteCard onCreateSite={handleCreateSite} />
-          {filteredAndSortedSites.map((site) => (
-            <SiteCard key={site.id} site={site} />
-          ))}
-        </div>
-      </main>
-    </div>
+      <HandleDataSection
+        query={query}
+        pagination={pagination}
+        setPagination={setPagination}
+      />
+    </>
+  );
+}
+
+function HandleDataSection({
+  query,
+  pagination,
+  setPagination,
+}: {
+  query: UseQueryResult<ApiResponse<Site[]>, Error>;
+  pagination: QueryObject;
+  setPagination: React.Dispatch<React.SetStateAction<QueryObject>>;
+}) {
+  if (query.isError) {
+    return <div className="text-red-500">Error loading sites.</div>;
+  }
+
+  const data = query.data?.data ?? [];
+  const meta = query.data?.meta;
+
+  console.log(data);
+
+  if (query.isLoading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        {Array.from({ length: 10 }, (_, i) => (
+          <LoadingCard key={i} />
+        ))}
+      </div>
+    );
+  }
+
+  if (data.length == 0) {
+    return <NoDataContainer />;
+  }
+
+  return (
+    <>
+      <div>
+        {data.map((site) => (
+          <SiteCard key={site.id} site={site} />
+        ))}
+      </div>
+      <div className="py-8">
+        <PaginationSection
+          pagination={pagination}
+          setPagination={setPagination}
+        />
+      </div>
+    </>
   );
 }

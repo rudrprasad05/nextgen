@@ -58,6 +58,8 @@ export interface BaseModel {
   isActive: boolean;
 }
 
+export const FIVE_MINUTE_CACHE = 1000 * 60 * 5;
+
 export interface ApiResponse<T> {
   success: boolean;
   statusCode: number;
@@ -71,6 +73,8 @@ export interface ApiResponse<T> {
 export interface QueryObject {
   pageNumber?: number;
   pageSize?: number;
+  totalCount?: number;
+  totalPages?: number;
   showInGallery?: boolean;
   isDeleted?: boolean;
   sortBy?: ESortBy;
