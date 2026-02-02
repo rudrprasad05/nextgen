@@ -1,13 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useEditor } from "@/lib/page-builder/editor-context";
+import { useEditor } from "@/context/editor-context";
 import {
   downloadFile,
   exportJSON,
   exportNextJS,
 } from "@/lib/page-builder/export";
-import { FileJson, RotateCcw } from "lucide-react";
+import { ArrowLeft, FileJson, RotateCcw } from "lucide-react";
 import { ExportButton } from "./export-button";
 
 export function TopBar() {
@@ -36,7 +36,9 @@ export function TopBar() {
   return (
     <header className="h-14 bg-background border-b border-border px-4 flex items-center justify-between">
       <div className="flex items-center gap-2">
-        {/* <LeftArroe */}
+        <Button variant="ghost" size="icon" className="p-0 rounded-full">
+          <ArrowLeft className="h-5 w-5 text-foreground" />
+        </Button>
         <h1 className="text-lg font-semibold text-foreground">Page Builder</h1>
         <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
           {schema.elements.length} elements

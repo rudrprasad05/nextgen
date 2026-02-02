@@ -1,49 +1,51 @@
-"use client"
+"use client";
 
-import { useEditor } from "@/lib/page-builder/editor-context"
-import { ELEMENT_LABELS } from "@/lib/page-builder/types"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { useEditor } from "@/context/editor-context";
+import { ELEMENT_LABELS } from "@/lib/page-builder/types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
-} from "@/components/ui/select"
-import { Trash2, Bold, Italic, Underline } from "lucide-react"
-import { cn } from "@/lib/utils"
+  SelectValue,
+} from "@/components/ui/select";
+import { Trash2, Bold, Italic, Underline } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function InspectorPanel() {
-  const { selectedId, getElement, updateElement, deleteElement } = useEditor()
-  
-  const element = selectedId ? getElement(selectedId) : null
+  const { selectedId, getElement, updateElement, deleteElement } = useEditor();
+
+  const element = selectedId ? getElement(selectedId) : null;
 
   if (!element) {
     return (
       <div className="w-72 bg-background border-l border-border p-4">
-        <h2 className="text-sm font-semibold text-foreground mb-4">Inspector</h2>
+        <h2 className="text-sm font-semibold text-foreground mb-4">
+          Inspector
+        </h2>
         <p className="text-sm text-muted-foreground">
           Select an element on the canvas to edit its properties.
         </p>
       </div>
-    )
+    );
   }
 
   const updateProp = (key: string, value: string) => {
-    updateElement(element.id, { props: { ...element.props, [key]: value } })
-  }
+    updateElement(element.id, { props: { ...element.props, [key]: value } });
+  };
 
   const updateStyle = (key: string, value: string) => {
-    updateElement(element.id, { styles: { ...element.styles, [key]: value } })
-  }
+    updateElement(element.id, { styles: { ...element.styles, [key]: value } });
+  };
 
   const toggleStyle = (key: string, onValue: string, offValue: string) => {
-    const current = element.styles[key as keyof typeof element.styles]
-    updateStyle(key, current === onValue ? offValue : onValue)
-  }
+    const current = element.styles[key as keyof typeof element.styles];
+    updateStyle(key, current === onValue ? offValue : onValue);
+  };
 
   return (
     <div className="w-72 bg-background border-l border-border p-4 overflow-y-auto">
@@ -63,13 +65,17 @@ export function InspectorPanel() {
 
       <div className="space-y-6">
         {/* Element-specific controls */}
-        {(element.type === "h1" || element.type === "h2" || element.type === "h3") && (
+        {(element.type === "h1" ||
+          element.type === "h2" ||
+          element.type === "h3") && (
           <section className="space-y-3">
             <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Content
             </h3>
             <div className="space-y-2">
-              <Label htmlFor="content" className="text-xs">Text</Label>
+              <Label htmlFor="content" className="text-xs">
+                Text
+              </Label>
               <Input
                 id="content"
                 value={element.props.content || ""}
@@ -78,7 +84,9 @@ export function InspectorPanel() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="fontSize" className="text-xs">Font Size</Label>
+              <Label htmlFor="fontSize" className="text-xs">
+                Font Size
+              </Label>
               <Select
                 value={element.styles.fontSize || "2rem"}
                 onValueChange={(value) => updateStyle("fontSize", value)}
@@ -106,7 +114,7 @@ export function InspectorPanel() {
                     onClick={() => updateStyle("textAlign", align)}
                     className={cn(
                       "flex-1 h-8 text-xs capitalize",
-                      element.styles.textAlign === align && "bg-accent"
+                      element.styles.textAlign === align && "bg-accent",
                     )}
                   >
                     {align}
@@ -123,7 +131,9 @@ export function InspectorPanel() {
               Content
             </h3>
             <div className="space-y-2">
-              <Label htmlFor="content" className="text-xs">Text</Label>
+              <Label htmlFor="content" className="text-xs">
+                Text
+              </Label>
               <Textarea
                 id="content"
                 value={element.props.content || ""}
@@ -132,7 +142,9 @@ export function InspectorPanel() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lineHeight" className="text-xs">Line Height</Label>
+              <Label htmlFor="lineHeight" className="text-xs">
+                Line Height
+              </Label>
               <Select
                 value={element.styles.lineHeight || "1.6"}
                 onValueChange={(value) => updateStyle("lineHeight", value)}
@@ -149,10 +161,14 @@ export function InspectorPanel() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="maxWidth" className="text-xs">Max Width</Label>
+              <Label htmlFor="maxWidth" className="text-xs">
+                Max Width
+              </Label>
               <Select
                 value={element.styles.maxWidth || "none"}
-                onValueChange={(value) => updateStyle("maxWidth", value === "none" ? "" : value)}
+                onValueChange={(value) =>
+                  updateStyle("maxWidth", value === "none" ? "" : value)
+                }
               >
                 <SelectTrigger className="h-8 text-sm">
                   <SelectValue placeholder="None" />
@@ -174,7 +190,9 @@ export function InspectorPanel() {
               Image
             </h3>
             <div className="space-y-2">
-              <Label htmlFor="src" className="text-xs">Image URL</Label>
+              <Label htmlFor="src" className="text-xs">
+                Image URL
+              </Label>
               <Input
                 id="src"
                 value={element.props.src || ""}
@@ -184,7 +202,9 @@ export function InspectorPanel() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="alt" className="text-xs">Alt Text</Label>
+              <Label htmlFor="alt" className="text-xs">
+                Alt Text
+              </Label>
               <Input
                 id="alt"
                 value={element.props.alt || ""}
@@ -194,7 +214,9 @@ export function InspectorPanel() {
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-2">
-                <Label htmlFor="width" className="text-xs">Width</Label>
+                <Label htmlFor="width" className="text-xs">
+                  Width
+                </Label>
                 <Input
                   id="width"
                   value={element.styles.width || "100%"}
@@ -203,7 +225,9 @@ export function InspectorPanel() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="height" className="text-xs">Height</Label>
+                <Label htmlFor="height" className="text-xs">
+                  Height
+                </Label>
                 <Input
                   id="height"
                   value={element.styles.height || "auto"}
@@ -213,7 +237,9 @@ export function InspectorPanel() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="objectFit" className="text-xs">Object Fit</Label>
+              <Label htmlFor="objectFit" className="text-xs">
+                Object Fit
+              </Label>
               <Select
                 value={element.styles.objectFit || "cover"}
                 onValueChange={(value) => updateStyle("objectFit", value)}
@@ -230,7 +256,9 @@ export function InspectorPanel() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="borderRadius" className="text-xs">Border Radius</Label>
+              <Label htmlFor="borderRadius" className="text-xs">
+                Border Radius
+              </Label>
               <Select
                 value={element.styles.borderRadius || "0"}
                 onValueChange={(value) => updateStyle("borderRadius", value)}
@@ -266,7 +294,7 @@ export function InspectorPanel() {
                     onClick={() => updateStyle("flexDirection", dir)}
                     className={cn(
                       "flex-1 h-8 text-xs capitalize",
-                      element.styles.flexDirection === dir && "bg-accent"
+                      element.styles.flexDirection === dir && "bg-accent",
                     )}
                   >
                     {dir}
@@ -275,7 +303,9 @@ export function InspectorPanel() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="justifyContent" className="text-xs">Justify Content</Label>
+              <Label htmlFor="justifyContent" className="text-xs">
+                Justify Content
+              </Label>
               <Select
                 value={element.styles.justifyContent || "flex-start"}
                 onValueChange={(value) => updateStyle("justifyContent", value)}
@@ -293,7 +323,9 @@ export function InspectorPanel() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="alignItems" className="text-xs">Align Items</Label>
+              <Label htmlFor="alignItems" className="text-xs">
+                Align Items
+              </Label>
               <Select
                 value={element.styles.alignItems || "stretch"}
                 onValueChange={(value) => updateStyle("alignItems", value)}
@@ -310,7 +342,9 @@ export function InspectorPanel() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="gap" className="text-xs">Gap</Label>
+              <Label htmlFor="gap" className="text-xs">
+                Gap
+              </Label>
               <Select
                 value={element.styles.gap || "1rem"}
                 onValueChange={(value) => updateStyle("gap", value)}
@@ -337,7 +371,9 @@ export function InspectorPanel() {
           </h3>
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-2">
-              <Label htmlFor="padding" className="text-xs">Padding</Label>
+              <Label htmlFor="padding" className="text-xs">
+                Padding
+              </Label>
               <Input
                 id="padding"
                 value={element.styles.padding || ""}
@@ -347,7 +383,9 @@ export function InspectorPanel() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="margin" className="text-xs">Margin</Label>
+              <Label htmlFor="margin" className="text-xs">
+                Margin
+              </Label>
               <Input
                 id="margin"
                 value={element.styles.margin || ""}
@@ -365,7 +403,9 @@ export function InspectorPanel() {
           </h3>
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-2">
-              <Label htmlFor="color" className="text-xs">Text Color</Label>
+              <Label htmlFor="color" className="text-xs">
+                Text Color
+              </Label>
               <div className="flex gap-1">
                 <Input
                   id="color"
@@ -383,7 +423,9 @@ export function InspectorPanel() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="background" className="text-xs">Background</Label>
+              <Label htmlFor="background" className="text-xs">
+                Background
+              </Label>
               <div className="flex gap-1">
                 <Input
                   id="background"
@@ -414,7 +456,7 @@ export function InspectorPanel() {
               onClick={() => toggleStyle("fontWeight", "700", "400")}
               className={cn(
                 "h-8",
-                element.styles.fontWeight === "700" && "bg-accent"
+                element.styles.fontWeight === "700" && "bg-accent",
               )}
             >
               <Bold className="h-4 w-4" />
@@ -425,7 +467,7 @@ export function InspectorPanel() {
               onClick={() => toggleStyle("fontStyle", "italic", "normal")}
               className={cn(
                 "h-8",
-                element.styles.fontStyle === "italic" && "bg-accent"
+                element.styles.fontStyle === "italic" && "bg-accent",
               )}
             >
               <Italic className="h-4 w-4" />
@@ -436,7 +478,7 @@ export function InspectorPanel() {
               onClick={() => toggleStyle("textDecoration", "underline", "none")}
               className={cn(
                 "h-8",
-                element.styles.textDecoration === "underline" && "bg-accent"
+                element.styles.textDecoration === "underline" && "bg-accent",
               )}
             >
               <Underline className="h-4 w-4" />
@@ -455,10 +497,11 @@ export function InspectorPanel() {
             placeholder="property: value; ..."
           />
           <p className="text-xs text-muted-foreground">
-            Add custom CSS properties (e.g., box-shadow: 0 2px 4px rgba(0,0,0,0.1);)
+            Add custom CSS properties (e.g., box-shadow: 0 2px 4px
+            rgba(0,0,0,0.1);)
           </p>
         </section>
       </div>
     </div>
-  )
+  );
 }

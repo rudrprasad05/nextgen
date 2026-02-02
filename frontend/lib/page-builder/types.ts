@@ -28,6 +28,14 @@ export interface ElementStyles {
   gap?: string;
 }
 
+export type ViewportMode = "desktop" | "tablet" | "mobile";
+
+export const VIEWPORT_WIDTHS: Record<ViewportMode, string> = {
+  desktop: "100%",
+  tablet: "768px",
+  mobile: "375px",
+};
+
 export interface ElementNode<T extends ElementType = ElementType> {
   id: string;
   type: T;
