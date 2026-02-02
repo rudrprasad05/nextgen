@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -20,9 +21,13 @@ export function Navbar() {
       <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">
-            <span className="text-background font-bold text-sm">N</span>
-          </div>
+          <Image
+            className="rounded-md"
+            src="/logo.png"
+            alt="NextGen Logo"
+            width={32}
+            height={32}
+          />
           <span className="font-semibold text-lg">NextGen</span>
         </Link>
 
