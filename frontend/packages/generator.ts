@@ -11,6 +11,7 @@ export type GeneratedFile = {
 };
 
 export function generateSite(schema: PageSchema): GeneratedFile[] {
+  console.log(schema);
   return [
     {
       path: "app/page.tsx",
@@ -18,7 +19,7 @@ export function generateSite(schema: PageSchema): GeneratedFile[] {
     },
     {
       path: "app/layout.tsx",
-      content: generateLayout(),
+      content: generateLayout(schema),
     },
     {
       path: "package.json",

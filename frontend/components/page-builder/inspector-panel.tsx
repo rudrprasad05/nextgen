@@ -1,11 +1,8 @@
 "use client";
 
-import { useEditor } from "@/context/editor-context";
-import { ELEMENT_LABELS } from "@/lib/page-builder/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -13,13 +10,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2, Bold, Italic, Underline } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { useEditor } from "@/context/editor-context";
+import { ELEMENT_LABELS } from "@/lib/page-builder/types";
 import { cn } from "@/lib/utils";
+import { Bold, Italic, Trash2, Underline } from "lucide-react";
 
 export function InspectorPanel() {
   const { selectedId, getElement, updateElement, deleteElement } = useEditor();
 
   const element = selectedId ? getElement(selectedId) : null;
+  const isRoot = selectedId === "body";
 
   if (!element) {
     return (
@@ -58,6 +59,7 @@ export function InspectorPanel() {
           size="sm"
           onClick={() => deleteElement(element.id)}
           className="text-destructive hover:text-destructive hover:bg-destructive/10"
+          disabled={isRoot}
         >
           <Trash2 className="h-4 w-4" />
         </Button>

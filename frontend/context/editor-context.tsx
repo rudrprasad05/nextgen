@@ -2,17 +2,17 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
-  useCallback,
   type ReactNode,
 } from "react";
 import type {
-  PageSchema,
   ElementNode,
-  ElementType,
   ElementStyles,
+  ElementType,
+  PageSchema,
   ViewportMode,
 } from "../lib/page-builder/types";
 import { DEFAULT_PROPS, DEFAULT_STYLES } from "../lib/page-builder/types";
@@ -54,52 +54,62 @@ function generateId(): string {
   return `el_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
 
-function findElementById(
-  elements: ElementNode[],
-  id: string,
-): ElementNode | null {
-  for (const el of elements) {
-    if (el.id === id) return el;
-    if (el.children) {
-      const found = findElementById(el.children, id);
-      if (found) return found;
-    }
+function findElementById(root: ElementNode, id: string): ElementNode | null {
+  if (root.id === id) return root;
+  if (!root.children) return null;
+
+  for (const child of root.children) {
+    const found = findElementById(child, id);
+    if (found) return found;
   }
   return null;
 }
 
+type ElementUpdate =
+  | { styles?: ElementStyles }
+  | { props?: Record<string, unknown> };
+
 function updateElementInTree(
-  elements: ElementNode[],
+  node: ElementNode,
   id: string,
-  updates: Partial<Pick<ElementNode, "props" | "styles">>,
-): ElementNode[] {
-  return elements.map((el) => {
-    if (el.id === id) {
-      return {
-        ...el,
-        props: { ...el.props, ...updates.props },
-        styles: { ...el.styles, ...updates.styles },
-      };
-    }
-    if (el.children) {
-      return { ...el, children: updateElementInTree(el.children, id, updates) };
-    }
-    return el;
+  updates: ElementUpdate,
+): ElementNode {
+  if (node.id === id) {
+    return {
+      ...node,
+      props:
+        "props" in updates ? { ...node.props, ...updates.props } : node.props,
+      styles:
+        "styles" in updates
+          ? { ...node.styles, ...updates.styles }
+          : node.styles,
+    };
+  }
+
+  if (!node.children || node.children.length === 0) {
+    return node;
+  }
+
+  let didChange = false;
+
+  const newChildren = node.children.map((child) => {
+    const updated = updateElementInTree(child, id, updates);
+    if (updated !== child) didChange = true;
+    return updated;
   });
+
+  return didChange ? { ...node, children: newChildren } : node;
 }
 
-function deleteElementFromTree(
-  elements: ElementNode[],
-  id: string,
-): ElementNode[] {
-  return elements
-    .filter((el) => el.id !== id)
-    .map((el) => {
-      if (el.children) {
-        return { ...el, children: deleteElementFromTree(el.children, id) };
-      }
-      return el;
-    });
+function deleteElementFromTree(node: ElementNode, id: string): ElementNode {
+  if (!node.children) return node;
+
+  return {
+    ...node,
+    children: node.children
+      .filter((child) => child.id !== id)
+      .map((child) => deleteElementFromTree(child, id)),
+  };
 }
 
 function removeElementFromTree(
@@ -171,6 +181,10 @@ function insertElementAtIndex(
   });
 }
 
+function canDeleteElement(element: ElementNode) {
+  return element.type !== "body";
+}
+
 function addElementToParent(
   elements: ElementNode[],
   element: ElementNode,
@@ -190,7 +204,23 @@ function addElementToParent(
   });
 }
 
-const DEFAULT_SCHEMA: PageSchema = { elements: [] };
+const DEFAULT_SCHEMA: PageSchema = {
+  root: {
+    id: "body",
+    type: "body",
+    props: {},
+    styles: {
+      background: "#ffffff",
+      padding: "24px",
+      color: "#000",
+    },
+    children: [],
+  },
+  meta: {
+    title: "New Website",
+    description: "New website",
+  },
+};
 
 export function EditorProvider({ children }: { children: ReactNode }) {
   const [schema, setSchema] = useState<PageSchema>(DEFAULT_SCHEMA);
@@ -227,16 +257,33 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         type,
         props: { ...DEFAULT_PROPS[type] },
         styles: { ...DEFAULT_STYLES[type] },
-        children: type === "section" ? [] : undefined,
+        children: type === "section" ? ([] as ElementNode[]) : undefined,
       };
 
       setSchema((prev) => {
-        if (parentId) {
+        const targetParent = parentId
+          ? findElementById(prev.root, parentId)
+          : prev.root;
+
+        if (!targetParent) return prev;
+
+        const insert = (node: ElementNode): ElementNode => {
+          if (node.id === targetParent.id) {
+            return {
+              ...node,
+              children: [...(node.children || []), newElement],
+            };
+          }
+
+          if (!node.children) return node;
+
           return {
-            elements: addElementToParent(prev.elements, newElement, parentId),
+            ...node,
+            children: node.children.map(insert),
           };
-        }
-        return { elements: [...prev.elements, newElement] };
+        };
+
+        return { ...prev, root: insert(prev.root) };
       });
 
       setSelectedId(newElement.id);
@@ -247,36 +294,49 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const updateElement = useCallback(
     (id: string, updates: Partial<Pick<ElementNode, "props" | "styles">>) => {
       setSchema((prev) => ({
-        elements: updateElementInTree(prev.elements, id, updates),
+        ...prev,
+        root: updateElementInTree(prev.root, id, updates),
       }));
     },
     [],
   );
 
   const deleteElement = useCallback((id: string) => {
+    if (id === "body") return;
+
     setSchema((prev) => ({
-      elements: deleteElementFromTree(prev.elements, id),
+      ...prev,
+      root: deleteElementFromTree(prev.root, id),
     }));
+
     setSelectedId((prev) => (prev === id ? null : prev));
   }, []);
 
   const moveElement = useCallback(
     (activeId: string, overId: string, parentId?: string | null) => {
+      if (activeId === "body") return;
+
       setSchema((prev) => {
-        const { elements, removed } = removeElementFromTree(
-          prev.elements,
+        if (!prev.root.children) return prev;
+
+        const { elements: cleanedChildren, removed } = removeElementFromTree(
+          prev.root.children,
           activeId,
         );
+
         if (!removed) return prev;
 
-        if (parentId === undefined) {
-          return {
-            elements: insertElementAtIndex(elements, removed, overId, null),
-          };
-        }
+        const updatedChildren =
+          parentId === undefined || parentId === "body"
+            ? insertElementAtIndex(cleanedChildren, removed, overId, null)
+            : insertElementAtIndex(cleanedChildren, removed, overId, parentId);
 
         return {
-          elements: insertElementAtIndex(elements, removed, overId, parentId),
+          ...prev,
+          root: {
+            ...prev.root,
+            children: updatedChildren,
+          },
         };
       });
     },
@@ -284,9 +344,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   );
 
   const getElement = useCallback(
-    (id: string): ElementNode | null => {
-      return findElementById(schema.elements, id);
-    },
+    (id: string) => findElementById(schema.root, id),
     [schema],
   );
 

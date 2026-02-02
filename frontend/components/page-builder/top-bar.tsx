@@ -41,7 +41,7 @@ export function TopBar() {
         </Button>
         <h1 className="text-lg font-semibold text-foreground">Page Builder</h1>
         <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
-          {schema.elements.length} elements
+          {schema.root.children?.length} elements
         </span>
       </div>
 

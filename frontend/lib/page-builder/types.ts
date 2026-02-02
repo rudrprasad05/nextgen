@@ -1,6 +1,11 @@
-import { ElementPropsMap } from "./element-types";
-
-export type ElementType = "h1" | "h2" | "h3" | "p" | "image" | "section";
+export type ElementType =
+  | "h1"
+  | "h2"
+  | "h3"
+  | "p"
+  | "image"
+  | "section"
+  | "body";
 
 export interface ElementStyles {
   padding?: string;
@@ -16,6 +21,9 @@ export interface ElementStyles {
   textAlign?: string;
   lineHeight?: string;
   maxWidth?: string;
+  maxHeight?: string;
+  minWidth?: string;
+  minHeight?: string;
   // Image styles
   width?: string;
   height?: string;
@@ -28,6 +36,31 @@ export interface ElementStyles {
   gap?: string;
 }
 
+export type ElementPropsMap = {
+  body: {
+    background?: string;
+    fontFamily?: string;
+  };
+
+  section: {};
+
+  h1: { content: string };
+  h2: { content: string };
+  h3: { content: string };
+  p: { content: string };
+
+  image: {
+    src: string;
+    alt?: string;
+  };
+};
+
+interface BaseElementNode {
+  id: string;
+  children?: ElementNode[];
+  styles: ElementStyles;
+}
+
 export type ViewportMode = "desktop" | "tablet" | "mobile";
 
 export const VIEWPORT_WIDTHS: Record<ViewportMode, string> = {
@@ -36,16 +69,47 @@ export const VIEWPORT_WIDTHS: Record<ViewportMode, string> = {
   mobile: "375px",
 };
 
-export interface ElementNode<T extends ElementType = ElementType> {
-  id: string;
-  type: T;
-  props: ElementPropsMap[T];
-  styles: ElementStyles;
-  children?: T extends "section" ? ElementNode[] : never;
+export interface MetaData {
+  title: string;
+  description?: string;
+  slug?: string;
+  createdOn?: string;
+  updatedOn?: string;
 }
 
+export type ElementNode =
+  | (BaseElementNode & {
+      type: "body";
+      props: ElementPropsMap["body"];
+    })
+  | (BaseElementNode & {
+      type: "section";
+      props: ElementPropsMap["section"];
+    })
+  | (BaseElementNode & {
+      type: "h1";
+      props: ElementPropsMap["h1"];
+    })
+  | (BaseElementNode & {
+      type: "h2";
+      props: ElementPropsMap["h2"];
+    })
+  | (BaseElementNode & {
+      type: "h3";
+      props: ElementPropsMap["h3"];
+    })
+  | (BaseElementNode & {
+      type: "p";
+      props: ElementPropsMap["p"];
+    })
+  | (BaseElementNode & {
+      type: "image";
+      props: ElementPropsMap["image"];
+    });
+
 export interface PageSchema {
-  elements: ElementNode[];
+  root: ElementNode;
+  meta: MetaData;
 }
 
 export interface DragItem {
@@ -64,6 +128,7 @@ export const DEFAULT_PROPS: Record<ElementType, Record<string, any>> = {
   },
   image: { src: "https://placehold.co/400x300", alt: "Placeholder image" },
   section: {},
+  body: {},
 };
 
 export const DEFAULT_STYLES: Record<ElementType, ElementStyles> = {
@@ -85,6 +150,10 @@ export const DEFAULT_STYLES: Record<ElementType, ElementStyles> = {
     padding: "1rem",
     background: "transparent",
   },
+  body: {
+    height: "100%",
+    background: "#fff",
+  },
 };
 
 export const ELEMENT_LABELS: Record<ElementType, string> = {
@@ -94,4 +163,5 @@ export const ELEMENT_LABELS: Record<ElementType, string> = {
   p: "Paragraph",
   image: "Image",
   section: "Section",
+  body: "Body",
 };

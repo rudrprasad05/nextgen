@@ -2,18 +2,19 @@
 
 import React from "react";
 
+import { useEditor } from "@/context/editor-context";
+import type { ElementNode, ElementStyles } from "@/lib/page-builder/types";
+import { ELEMENT_LABELS } from "@/lib/page-builder/types";
+import { cn } from "@/lib/utils";
+import { useDroppable } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useDroppable } from "@dnd-kit/core";
-import type { ElementNode, ElementStyles } from "@/lib/page-builder/types";
-import { useEditor } from "@/context/editor-context";
-import { ELEMENT_LABELS } from "@/lib/page-builder/types";
 import { GripVertical, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface CanvasElementProps {
   element: ElementNode;
   parentId?: string;
+  children?: ElementNode;
 }
 
 function parseCustomCss(cssString: string | undefined): React.CSSProperties {
@@ -35,7 +36,7 @@ function parseCustomCss(cssString: string | undefined): React.CSSProperties {
   return styles;
 }
 
-function buildInlineStyles(styles: ElementStyles): React.CSSProperties {
+export function buildInlineStyles(styles: ElementStyles): React.CSSProperties {
   const inline: React.CSSProperties = {};
 
   if (styles.padding) inline.padding = styles.padding;
@@ -92,11 +93,17 @@ function ElementContent({ element }: { element: ElementNode }) {
       return null;
   }
 }
-
-function SectionDropZone({ element }: { element: ElementNode }) {
+function SectionDropZone({
+  element,
+}: {
+  element: Extract<ElementNode, { type: "section" | "body" }>;
+}) {
   const { setNodeRef, isOver } = useDroppable({
-    id: `section-${element.id}`,
-    data: { type: "section", sectionId: element.id },
+    id: element.id,
+    data: {
+      nodeId: element.id,
+      accepts: "children",
+    },
   });
 
   const styles = buildInlineStyles(element.styles);
@@ -104,17 +111,23 @@ function SectionDropZone({ element }: { element: ElementNode }) {
   return (
     <div
       ref={setNodeRef}
-      style={{ ...styles, display: "flex", minHeight: "60px" }}
+      style={{
+        ...styles,
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "60px",
+      }}
       className={cn(
-        "border border-dashed border-border rounded transition-colors",
+        "border border-dashed border-border rounded",
         isOver && "border-primary bg-primary/5",
       )}
     >
-      {(!element.children || element.children.length === 0) && (
+      {element.children?.length === 0 && (
         <div className="flex items-center justify-center w-full text-xs text-muted-foreground">
           Drop elements here
         </div>
       )}
+
       {element.children?.map((child) => (
         <CanvasElement key={child.id} element={child} parentId={element.id} />
       ))}
@@ -122,7 +135,11 @@ function SectionDropZone({ element }: { element: ElementNode }) {
   );
 }
 
-export function CanvasElement({ element, parentId }: CanvasElementProps) {
+export function CanvasElement({
+  element,
+  parentId,
+  children,
+}: CanvasElementProps) {
   const { selectedId, setSelectedId, deleteElement } = useEditor();
   const isSelected = selectedId === element.id;
 

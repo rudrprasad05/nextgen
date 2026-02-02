@@ -1,4 +1,3 @@
-import { HeadingProps, ParagraphProps } from "@/lib/page-builder/element-types";
 import {
   ElementNode,
   ElementStyles,
@@ -10,23 +9,23 @@ export function generatePage(schema: PageSchema): string {
 export default function Page() {
   return (
     <main>
-      ${schema.elements.map(renderNode).join("\n")}
+      ${schema.root.children?.map(renderNode).join("\n")}
     </main>
   )
 }
 `;
 }
 
-function renderNode(node: ElementNode): string {
+export function renderNode(node: ElementNode): string {
   switch (node.type) {
     case "h1":
-      return `<h1 style={${generateReactStyleObject(node.styles)}}>${(node.props as HeadingProps).content}</h1>`;
+      return `<h1 style={${generateReactStyleObject(node.styles)}}>${node.props.content}</h1>`;
     case "h2":
-      return `<h2 style={${generateReactStyleObject(node.styles)}}>${(node.props as HeadingProps).content}</h2>`;
+      return `<h2 style={${generateReactStyleObject(node.styles)}}>${node.props.content}</h2>`;
     case "h3":
-      return `<h3 style={${generateReactStyleObject(node.styles)}}>${(node.props as HeadingProps).content}</h3>`;
+      return `<h3 style={${generateReactStyleObject(node.styles)}}>${node.props.content}</h3>`;
     case "p":
-      return `<p style={${generateReactStyleObject(node.styles)}}>${(node.props as ParagraphProps).content}</p>`;
+      return `<p style={${generateReactStyleObject(node.styles)}}>${node.props.content}</p>`;
 
     case "section":
       return `
@@ -39,7 +38,7 @@ function renderNode(node: ElementNode): string {
       return "";
   }
 }
-function generateReactStyleObject(styles: ElementStyles): string {
+export function generateReactStyleObject(styles: ElementStyles): string {
   const entries = Object.entries(styles)
     .filter(([, value]) => value !== undefined && value !== "")
     .map(([key, value]) => {
