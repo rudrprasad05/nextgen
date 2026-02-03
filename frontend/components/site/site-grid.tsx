@@ -1,28 +1,21 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { mockSites, type Site } from "@/lib/dashboard/types";
-import { ArrowUpDown, Search } from "lucide-react";
-import { useMemo, useState } from "react";
-import { NewSiteCard } from "./new-site-card";
-import { SiteCard } from "./site-card";
-import { H1, H3, LargeText, P } from "../font/Fonts";
-import { ApiResponse, FIVE_MINUTE_CACHE, QueryObject } from "@/lib/models";
 import { GetAllSites } from "@/actions/site";
+import { useAuth } from "@/context/UserContext";
+import { type Site } from "@/lib/dashboard/types";
+import { ApiResponse, FIVE_MINUTE_CACHE, QueryObject } from "@/lib/models";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { NewSiteButton } from "./new-site-button";
+import { useState } from "react";
+import { H1, LargeText } from "../font/Fonts";
 import { LoadingCard, NoDataContainer } from "../global/LoadingContainer";
 import PaginationSection from "../global/PaginationSection";
 import { SectionHeader } from "../global/SectionHeader";
+import { NewSiteButton } from "./new-site-button";
+import { SiteCard } from "./site-card";
 
 export function SiteGrid() {
+  const { user, isLoading: authLoading } = useAuth();
+  const userId = user?.id;
   const [pagination, setPagination] = useState<QueryObject>({
     pageNumber: 1,
     totalCount: 0,
@@ -31,8 +24,13 @@ export function SiteGrid() {
   });
 
   const query = useQuery({
-    queryKey: ["admin-site", pagination],
-    queryFn: () => GetAllSites({ ...pagination }),
+    queryKey: ["admin-site", userId, pagination],
+    queryFn: () =>
+      GetAllSites({
+        ...pagination,
+        uuid: userId!, // safe because enabled guarantees it
+      }),
+    enabled: !!userId,
     staleTime: FIVE_MINUTE_CACHE,
   });
 
@@ -74,7 +72,7 @@ function HandleDataSection({
   const data = query.data?.data ?? [];
   const meta = query.data?.meta;
 
-  console.log(data);
+  console.log(query.data);
 
   if (query.isLoading) {
     return (

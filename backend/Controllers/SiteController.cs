@@ -53,8 +53,12 @@ namespace Backend.Controllers
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAllSitesForUser([FromQuery] RequestQueryObject queryObject)
         {
-            // stub for CreatedAtAction
-            return Ok();
+            var model = await _siteService.GetAllSitesForUserAsync(queryObject);
+            if (!model.Success)
+            {
+                return StatusCode(model.StatusCode, model);
+            }
+            return Ok(model);
         }
 
     }

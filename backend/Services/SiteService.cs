@@ -7,32 +7,35 @@ using Backend.Models.Request;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Backend.Models.Response;
+using Backend.Models.DTO;
+using Backend.Mappers;
 
 namespace Backend.Services
 {
     public class SiteService : ISiteService
     {
         private readonly ApplicationDbContext _db;
-        // private readonly IMediaService _mediaService;
+        private readonly ISiteMapper _siteMapper;
 
-        public SiteService(ApplicationDbContext db)
+        public SiteService(ApplicationDbContext db, ISiteMapper siteMapper)
         {
             _db = db;
-            // _mediaService = mediaService;
+            _siteMapper = siteMapper;
         }
 
-        public async Task<ApiResponse<Site[]>> GetAllSitesForUser(RequestQueryObject queryObject)
+        public async Task<ApiResponse<List<OnlySiteDto>>> GetAllSitesForUserAsync(RequestQueryObject queryObject)
         {
             var exists = await _db.Users.FirstOrDefaultAsync(x => x.Id == queryObject.UUID.ToString());
-            if (exists != null)
+            if (exists == null)
             {
-                return ApiResponse<Site[]>.NotFound(message: "the object doesnt exists");
+                return ApiResponse<List<OnlySiteDto>>.NotFound(message: "the object doesnt exists");
             }
 
-            var sites = _db.Sites
-                .Where(x => x.OwnerId == queryObject.UUID.ToString() && !x.IsDeleted);
+            var sites = await _db.Sites
+                .Where(x => x.OwnerId == queryObject.UUID.ToString() && !x.IsDeleted)
+                .ToListAsync();
 
-            return ApiResponse<Site[]>.Ok(sites.ToArray());
+            return ApiResponse<List<OnlySiteDto>>.Ok(await _siteMapper.FromModelToDtoAsync(sites));
         }
         public async Task<Site> CreateSiteAsync(CreateSiteRequestDto dto, string ownerId)
         {
