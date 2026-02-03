@@ -7,6 +7,7 @@ namespace Backend.Models
 {
     public class PageSchema
     {
-        public List<ElementNode> Elements { get; set; } = new();
+        public ElementNode Root { get; set; } = new();
+        public MetaDataModel MetaData { get; set; } = new();
     }
 }

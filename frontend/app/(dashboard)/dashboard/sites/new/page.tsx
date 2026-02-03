@@ -13,6 +13,8 @@ import { Branding } from "@/components/site/form-sections/branding";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { CreateSite } from "@/actions/site";
 import { toast } from "sonner";
+import { PageSchema } from "@/lib/page-builder/types";
+import { useAuth } from "@/context/UserContext";
 
 function generateSlug(name: string): string {
   return name
@@ -23,9 +25,22 @@ function generateSlug(name: string): string {
     .trim();
 }
 
+export interface CreateSiteRequestDto {
+  name: string;
+  slug: string;
+  description: string;
+  template: string;
+  defaultSeoTitle: string;
+  defaultSeoDescription: string;
+  favicon: Base64URLString | null;
+  status: string;
+  ownerId: string;
+}
+
 export default function CreateSitePage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
 
   // Form state
   const [name, setName] = useState("");
@@ -79,7 +94,7 @@ export default function CreateSitePage() {
     setIsSubmitting(true);
 
     // Simulate API call
-    const siteData = {
+    const siteData: CreateSiteRequestDto = {
       name: name.trim(),
       slug,
       description: description.trim(),
@@ -88,6 +103,7 @@ export default function CreateSitePage() {
       defaultSeoDescription: seoDescription.trim(),
       favicon,
       status: "draft" as const,
+      ownerId: user?.id as string, // Replace with actual user ID
     };
 
     console.log("Creating site:", siteData);

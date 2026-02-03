@@ -36,12 +36,12 @@ export function SideBarNavigation() {
     },
     {
       title: "Users",
-      href: "dashboard/users",
+      href: "/dashboard/users",
       icon: UsersIcon,
     },
     {
       title: "Sites",
-      href: "dashboard/sites",
+      href: "/dashboard/sites",
       icon: Globe,
     },
   ];

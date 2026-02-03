@@ -32,8 +32,8 @@ namespace Backend.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateSite([FromBody] CreateSiteRequestDto dto)
         {
-
-            var site = await _siteService.CreateSiteAsync(dto, GetCurrentUserId() ?? "");
+            var userId = GetCurrentUserId();
+            var site = await _siteService.CreateSiteAsync(dto, userId ?? dto.OwnerId);
             return Ok(ApiResponse<SiteResponseDto>.Ok(new SiteResponseDto
             {
                 Id = site.Id,
@@ -45,6 +45,13 @@ namespace Backend.Controllers
 
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetSite(Guid id)
+        {
+            // stub for CreatedAtAction
+            return Ok();
+        }
+
+        [HttpGet("get-all")]
+        public async Task<IActionResult> GetAllSitesForUser([FromQuery] RequestQueryObject queryObject)
         {
             // stub for CreatedAtAction
             return Ok();

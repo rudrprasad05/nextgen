@@ -15,6 +15,7 @@ namespace Backend.Models.Request
 
         public string DefaultSeoTitle { get; set; } = null!;
         public string DefaultSeoDescription { get; set; } = null!;
+        public string OwnerId { get; set; } = null!;
 
         // base64 data URL
         public string? Favicon { get; set; }

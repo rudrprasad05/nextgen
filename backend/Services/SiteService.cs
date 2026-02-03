@@ -6,6 +6,7 @@ using Backend.Interfaces;
 using Backend.Models.Request;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
+using Backend.Models.Response;
 
 namespace Backend.Services
 {
@@ -20,6 +21,19 @@ namespace Backend.Services
             // _mediaService = mediaService;
         }
 
+        public async Task<ApiResponse<Site[]>> GetAllSitesForUser(RequestQueryObject queryObject)
+        {
+            var exists = await _db.Users.FirstOrDefaultAsync(x => x.Id == queryObject.UUID.ToString());
+            if (exists != null)
+            {
+                return ApiResponse<Site[]>.NotFound(message: "the object doesnt exists");
+            }
+
+            var sites = _db.Sites
+                .Where(x => x.OwnerId == queryObject.UUID.ToString() && !x.IsDeleted);
+
+            return ApiResponse<Site[]>.Ok(sites.ToArray());
+        }
         public async Task<Site> CreateSiteAsync(CreateSiteRequestDto dto, string ownerId)
         {
             // Slug uniqueness check
@@ -65,7 +79,24 @@ namespace Backend.Services
                         Id = Guid.NewGuid(),
                         Title = "Home",
                         Slug = "home",
-                        Status = PageStatus.Draft
+                        Status = PageStatus.Draft,
+                        CreatedOn = DateTime.UtcNow,
+                        UpdatedOn = DateTime.UtcNow,
+                        Schema = new PageSchema
+                        {
+                            Root = new ElementNode
+                            {
+                                Id = "body",
+                                Type = ElementType.Body,
+                                Props = new Dictionary<string, object>(),
+                                Children = new List<ElementNode>()
+                            },
+                            MetaData = new MetaDataModel
+                            {
+                                Title = "New Website",
+                                Description = "New website"
+                            }
+                        }
                     }
                 };
             }

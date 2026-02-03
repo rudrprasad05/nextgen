@@ -12,7 +12,8 @@ namespace Backend.Models
         H3,
         P,
         Image,
-        Section
+        Section,
+        Body
     }
 
     public class ElementNode
