@@ -2,20 +2,29 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using backend.Interfaces;
+using Backend.Interfaces;
+using Backend.Mappers;
 using Backend.Models;
+using Backend.Models.DTO;
+using Backend.Models.Request;
+using Backend.Models.Response;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace backend.Repositories
+namespace Backend.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly UserManager<AppUser> _userManager;
 
-        public UserRepository(UserManager<AppUser> userManager)
+        private readonly UserManager<AppUser> _userManager;
+        private readonly ApplicationDbContext _context;
+        private readonly IUserMapper _userMapper;
+
+        public UserRepository(UserManager<AppUser> userManager, ApplicationDbContext context, IUserMapper userMapper)
         {
             _userManager = userManager;
+            _context = context;
+            _userMapper = userMapper;
         }
 
         public async Task<List<AppUser>> GetAllAsync(CancellationToken ct)
@@ -25,17 +34,26 @@ namespace backend.Repositories
                 .ToListAsync(ct);
         }
 
-        public async Task<AppUser?> GetByIdAsync(string id, CancellationToken ct)
+        public async Task<ApiResponse<UserDTO>> GetByIdAsync(string id)
         {
-            return await _userManager.Users
-                .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted, ct);
+            var user = await _userManager.Users
+                .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
+            if (user == null)
+            {
+                return ApiResponse<UserDTO>.NotFound(message: "User not found");
+            }
+            var dto = await _userMapper.FromModelToDtoAsync(user);
+            return ApiResponse<UserDTO>.Ok(dto);
         }
-
-        public async Task CreateAsync(AppUser user, string password, CancellationToken ct)
+        public async Task<ApiResponse<UserDTO>> CreateAsync(CreateUserRequestDto createUserRequestDto, CancellationToken ct)
         {
-            var result = await _userManager.CreateAsync(user, password);
+            var user = await _userMapper.ToEntityAsync(createUserRequestDto, ct);
+            var result = await _userManager.CreateAsync(user, createUserRequestDto.Password);
+
             if (!result.Succeeded)
                 throw new InvalidOperationException(string.Join(", ", result.Errors.Select(e => e.Description)));
+            var dto = await _userMapper.FromModelToDtoAsync(user);
+            return ApiResponse<UserDTO>.Ok(dto);
         }
     }
 }

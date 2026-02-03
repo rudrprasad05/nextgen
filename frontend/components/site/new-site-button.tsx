@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 
 export function NewSiteButton() {
   return (
-    <Link href={"/builder"}>
+    <Link href={"/dashboard/sites/new"}>
       <div
         className={`${buttonVariants({
           variant: "default",

@@ -9,3 +9,7 @@ export async function GetAllSites(
 ): Promise<ApiResponse<Site[]>> {
   return RequestWrapper<any>("GET", `sites/get-all`, { query });
 }
+
+export async function CreateSite(data: any): Promise<ApiResponse<Site>> {
+  return RequestWrapper<any>("POST", `sites/create`, { data });
+}

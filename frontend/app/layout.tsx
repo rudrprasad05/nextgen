@@ -4,6 +4,7 @@ import TanstackProvider from "@/context/TanstackProvider";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
 import { FullPageLoader } from "@/components/global/LoadingContainer";
+import { AuthProvider } from "@/context/UserContext";
 
 export const metadata: Metadata = {
   title: "NextGen | Static Site Generator",
@@ -55,10 +56,10 @@ export default function RootLayout({
     <html lang="en" className="text-foreground border-border bg-background">
       <body>
         <TanstackProvider>
-          {/* <AuthProvider> */}
-          <Suspense fallback={<FullPageLoader />}>{children}</Suspense>
-          <Toaster />
-          {/* </AuthProvider> */}
+          <AuthProvider>
+            <Suspense fallback={<FullPageLoader />}>{children}</Suspense>
+            <Toaster />
+          </AuthProvider>
         </TanstackProvider>
       </body>
     </html>

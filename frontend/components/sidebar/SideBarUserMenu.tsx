@@ -56,7 +56,7 @@ export function SideBarUserMenu() {
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link prefetch href={"profile"}>
+              <Link prefetch href={"/dashboard/profile"}>
                 <User className="mr-2 h-4 w-4" />
                 Profile
               </Link>

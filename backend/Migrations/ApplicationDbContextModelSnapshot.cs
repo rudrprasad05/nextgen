@@ -322,6 +322,9 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
+                    b.Property<Guid?>("ScreenshotId")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
@@ -335,6 +338,8 @@ namespace backend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
+
+                    b.HasIndex("ScreenshotId");
 
                     b.HasIndex("Slug")
                         .IsUnique();
@@ -617,7 +622,13 @@ namespace backend.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Backend.Models.Media", "Screenshot")
+                        .WithMany()
+                        .HasForeignKey("ScreenshotId");
+
                     b.Navigation("Owner");
+
+                    b.Navigation("Screenshot");
                 });
 
             modelBuilder.Entity("Backend.Models.SiteUser", b =>

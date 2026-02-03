@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Card, CardContent, CardHeader } from "../ui/card";
 
 export function LoadingContainer() {
   return (
@@ -28,6 +29,70 @@ export function LoadingCard() {
         <Skeleton className="h-4 w-full  bg-gray-300" />
         <Skeleton className="h-4 w-full  bg-gray-300" />
         <Skeleton className="h-4 w-3/5  bg-gray-300" />
+      </div>
+    </div>
+  );
+}
+
+export function DashboardSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      {/* TOP STATS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card key={i}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <div className="h-4 w-24 rounded bg-gray-200" />
+              <div className="h-4 w-4 rounded bg-gray-200" />
+            </CardHeader>
+            <CardContent>
+              <div className="h-7 w-20 rounded bg-gray-300 mt-2" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* BOTTOM SECTION */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* RECENT ACTIVITY */}
+        <Card className="pb-0">
+          <CardHeader>
+            <div className="h-5 w-40 rounded bg-gray-200" />
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <div className="h-8 w-8 rounded-full bg-gray-300" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-3/4 rounded bg-gray-200" />
+                  <div className="h-3 w-1/3 rounded bg-gray-200" />
+                </div>
+              </div>
+            ))}
+          </CardContent>
+
+          <div className="border-t p-2">
+            <div className="h-8 w-full rounded bg-gray-200" />
+          </div>
+        </Card>
+
+        {/* QUICK ACTIONS */}
+        <Card>
+          <CardHeader>
+            <div className="h-5 w-32 rounded bg-gray-200" />
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-[88px] rounded border border-gray-200 bg-gray-100"
+                />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

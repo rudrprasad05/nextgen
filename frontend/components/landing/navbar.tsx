@@ -47,7 +47,7 @@ export function Navbar() {
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-3">
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/dashboard">Log In</Link>
+            <Link href="/auth/login">Log In</Link>
           </Button>
           <Button size="sm" className="rounded-full" asChild>
             <Link href="/dashboard">Get Started</Link>
@@ -87,7 +87,7 @@ export function Navbar() {
                 className="w-full bg-transparent"
                 asChild
               >
-                <Link href="/dashboard">Log In</Link>
+                <Link href="/auth/login">Log In</Link>
               </Button>
               <Button className="w-full" asChild>
                 <Link href="/dashboard">Get Started</Link>

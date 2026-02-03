@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { SideBarLogo } from "./SideBarLogo";
 import { SideBarNavigation } from "./SideBarNavigation";
+import { SideBarUserMenu } from "./SideBarUserMenu";
 
 export function SideBar() {
   return (
@@ -20,7 +21,7 @@ export function SideBar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-solid border-primary/20 p-2">
-        {/* <SideBarUserMenu /> */}
+        <SideBarUserMenu />
       </SidebarFooter>
 
       <SidebarRail />

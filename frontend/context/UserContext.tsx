@@ -21,22 +21,10 @@ interface AuthContextType {
   isLoading: boolean;
 }
 
-export const dummyUser: User = {
-  id: "usr_01J8YFZ4Q2K9N3A6M8P7X1",
-  username: "rudr",
-  email: "rudr@example.com",
-  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock",
-  role: UserRoles.ADMIN,
-  createdOn: new Date().toISOString(),
-  updatedOn: new Date().toISOString(),
-  isDeleted: false,
-  profilePictureLink: "https://avatars.githubusercontent.com/u/1?v=4",
-};
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(dummyUser);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
@@ -54,7 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (redirectUrl?.toLowerCase() == "redirect") redirectUrl = null;
 
-    router.push(redirectUrl || "/redirect");
+    router.push(redirectUrl || "/dashboard");
   };
 
   const login = async (email: string, password: string, redirect?: string) => {

@@ -58,6 +58,14 @@ export interface BaseModel {
   isActive: boolean;
 }
 
+export interface DashboardData {
+  totalSites: number;
+  totalMedia: number;
+  activeUsers: number;
+  unreadNotifications: number;
+  notifications?: Notification[];
+}
+
 export const FIVE_MINUTE_CACHE = 1000 * 60 * 5;
 
 export interface ApiResponse<T> {

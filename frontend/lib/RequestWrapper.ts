@@ -9,17 +9,14 @@ export async function RequestWrapper<T>(
   method: Method,
   url: string,
   options: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data?: any;
     config?: AxiosRequestConfig;
     query?: QueryObject;
   },
 ): Promise<ApiResponse<T>> {
   const { data, config, query } = options;
-  //   const token = await GetToken();
   const params = buildMediaQueryParams(query);
-
-  url = `${url}?${params}`;
+  url = params ? `${url}?${params}` : url;
 
   try {
     const res = await axiosGlobal({
@@ -27,39 +24,75 @@ export async function RequestWrapper<T>(
       url,
       data,
       headers: {
-        // Authorization: `Bearer ${token}`,
         ...(config?.headers || {}),
       },
       ...config,
     });
 
-    if (res.status === 401) {
-      console.log("401", res);
-      redirect("/error/unauthorised");
-    }
-
     return res.data;
   } catch (error: unknown) {
+    // 🚨 Required: rethrow Next.js redirects
     if (isRedirectError(error)) {
-      console.log("401", error);
-      console.dir(error);
       throw error;
     }
 
-    if (error instanceof Error) {
-      const axiosError = error as AxiosError;
+    if (error instanceof AxiosError) {
+      const status = error.response?.status;
 
-      if (axiosError.response?.status === 401) {
+      // =====================
+      // AUTH
+      // =====================
+      if (status === 401) {
         redirect("/error/unauthorised");
       }
 
-      console.error(axiosError);
+      // =====================
+      // NOT FOUND
+      // =====================
+      if (status === 404) {
+        return {
+          data: null,
+          success: false,
+          statusCode: 404,
+          message: "Request API not found (RequestWrapper)",
+        } as ApiResponse<T>;
+      }
+
+      // =====================
+      // SERVER ERRORS
+      // =====================
+      if (status && status >= 500) {
+        return {
+          data: null,
+          success: false,
+          statusCode: 500,
+          message: "Request failed (RequestWrapper)",
+        } as ApiResponse<T>;
+      }
+
+      // =====================
+      // NO RESPONSE (server down, CORS, timeout)
+      // =====================
+      if (!error.response && error.request) {
+        return {
+          data: null,
+          success: false,
+          statusCode: 500,
+          message: "Server down, unreachable or CORS (RequestWrapper)",
+        } as ApiResponse<T>;
+      }
+
+      console.error("Axios error:", error);
     }
 
+    // =====================
+    // FALLBACK RESPONSE
+    // =====================
     return {
       data: null,
       success: false,
       statusCode: 400,
+      message: "Request failed",
     } as ApiResponse<T>;
   }
 }
