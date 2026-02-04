@@ -51,7 +51,9 @@ namespace Backend.Controllers
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.None
+                SameSite = SameSiteMode.None,
+                Domain = ".test.home",
+                Expires = DateTime.UtcNow.AddHours(1)
             });
 
             return Ok(ApiResponse<string>.Ok(data: "ok"));
@@ -115,7 +117,7 @@ namespace Backend.Controllers
                     HttpOnly = true,
                     Secure = true,
                     SameSite = SameSiteMode.None,
-                    Domain = ".localhost",
+                    Domain = ".test.home",
                     Expires = DateTime.UtcNow.AddHours(1)
                 });
 

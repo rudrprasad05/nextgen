@@ -22,19 +22,18 @@ namespace Backend.Config
         public static void AddAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             var frontend = configuration["AllowedHosts"] ?? throw new InvalidOperationException();
-            var allowedOrigins = configuration.GetSection("CorsOrigins").Get<string[]>()
-                ?? ["https://localhost:3000", "https://frcs.procyonfiji.com", "https://frcs-api.procyonfiji.com"];
+            var corsOriginsString = configuration["CorsOrigins"];
 
+            string[] allowedOrigins = { "https://localhost:3000", "https://test.home:3000", "https://test.home", "https://frcs-api.procyonfiji.com" };
             services.AddCors(c =>
             {
                 c.AddPolicy("allowSpecificOrigin", options =>
                 {
                     options
-                    .WithOrigins(allowedOrigins!)
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials()
-                    .SetIsOriginAllowed(_ => true);
+                        .WithOrigins(allowedOrigins)  // must match the exact origin
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
                 });
             });
             services.AddAuthentication(options =>
