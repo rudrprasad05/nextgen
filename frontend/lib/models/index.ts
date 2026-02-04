@@ -43,6 +43,7 @@ export enum UserRoles {
 
 export interface Site extends BaseModel {
   name: string;
+  slug: string;
   updatedAt: string;
   status: "draft" | "published";
   screenshot?: Media | null;

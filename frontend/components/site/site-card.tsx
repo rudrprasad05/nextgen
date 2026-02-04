@@ -34,10 +34,23 @@ export function SiteCard({ site }: SiteCardProps) {
   const [isImageValid, setIsImageValid] = useState(true);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
+  const goToSubdomainAdmin = () => {
+    // Read your base URL from env, e.g. NEXT_PUBLIC_BASE_URL=https://domain.com
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
+    // Construct subdomain URL
+    const subdomainUrl = new URL(baseUrl);
+    subdomainUrl.hostname = `${site.slug}.${subdomainUrl.hostname}`; // site.slug as subdomain
+    subdomainUrl.pathname = "/admin"; // path
+
+    // Redirect
+    window.location.href = subdomainUrl.toString();
+  };
+
   return (
     <Card
       className="group cursor-pointer p-4 transition-shadow hover:shadow-md"
-      onClick={() => router.push(`/?site=${site.id}`)}
+      onClick={goToSubdomainAdmin}
     >
       <div className="mb-3 flex aspect-video items-center justify-center rounded-md bg-muted">
         {site.screenshot ? (
