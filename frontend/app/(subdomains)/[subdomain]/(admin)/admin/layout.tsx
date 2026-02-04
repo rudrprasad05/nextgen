@@ -1,12 +1,6 @@
-import type { Metadata } from "next";
-import TanstackProvider from "@/context/TanstackProvider";
-import { Suspense } from "react";
-import { Toaster } from "sonner";
-import { FullPageLoader } from "@/components/global/LoadingContainer";
-import { AuthProvider } from "@/context/UserContext";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { SideBar } from "@/components/sidebar/SideBar";
 import { Header } from "@/components/sidebar/Header";
+import { SideBar } from "@/components/sidebar/SideBar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default function RootLayout({
   children,

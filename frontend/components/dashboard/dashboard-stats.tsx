@@ -1,31 +1,20 @@
 "use client";
 
+import { GetDashboardData } from "@/actions/dash";
 import {
   DashboardSkeleton,
-  LoadingCard,
   SmallLoadingHorizontialCard,
 } from "@/components/global/LoadingContainer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/context/AuthContext";
 import { DashboardData, FIVE_MINUTE_CACHE } from "@/lib/models";
-import {
-  Cake,
-  Database,
-  FileText,
-  Loader2,
-  MessageCircle,
-  Star,
-  TrendingUp,
-  Users,
-} from "lucide-react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { QuickActions } from "./quick-actions";
-import { GetDashboardData } from "@/actions/dash";
-import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/context/UserContext";
 import { formatFileSize } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { Cake, Database, Loader2, MessageCircle, Users } from "lucide-react";
+import Link from "next/link";
+import { QuickActions } from "./quick-actions";
 
 export function DashboardStats() {
   const { user } = useAuth();

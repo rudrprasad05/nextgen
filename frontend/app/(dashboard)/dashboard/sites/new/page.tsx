@@ -2,19 +2,18 @@
 
 import React from "react";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { BasicDetails } from "@/components/site/form-sections/basic-details";
-import { TemplatePicker } from "@/components/site/form-sections/template-picker";
-import { SeoSettings } from "@/components/site/form-sections/seo-settings";
-import { Branding } from "@/components/site/form-sections/branding";
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { CreateSite } from "@/actions/site";
+import { BasicDetails } from "@/components/site/form-sections/basic-details";
+import { Branding } from "@/components/site/form-sections/branding";
+import { SeoSettings } from "@/components/site/form-sections/seo-settings";
+import { TemplatePicker } from "@/components/site/form-sections/template-picker";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { PageSchema } from "@/lib/page-builder/types";
-import { useAuth } from "@/context/UserContext";
 
 function generateSlug(name: string): string {
   return name
@@ -54,6 +53,19 @@ export default function CreateSitePage() {
 
   // Validation
   const [slugError, setSlugError] = useState<string | undefined>();
+
+  const goToSubdomainAdmin = (slug: String) => {
+    // Read your base URL from env, e.g. NEXT_PUBLIC_BASE_URL=https://domain.com
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
+    // Construct subdomain URL
+    const subdomainUrl = new URL(baseUrl);
+    subdomainUrl.hostname = `${slug}.${subdomainUrl.hostname}`; // site.slug as subdomain
+    subdomainUrl.pathname = "/admin"; // path
+
+    // Redirect
+    window.location.href = subdomainUrl.toString();
+  };
 
   // Auto-generate slug from name
   useEffect(() => {
@@ -112,6 +124,9 @@ export default function CreateSitePage() {
 
     if (res.success) {
       toast.success("Site created successfully!");
+      goToSubdomainAdmin(slug);
+    } else {
+      console.log(res.message, res.errors);
     }
 
     setIsSubmitting(false);

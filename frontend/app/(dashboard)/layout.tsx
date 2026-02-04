@@ -1,7 +1,6 @@
 import { Header } from "@/components/sidebar/Header";
 import { SideBar } from "@/components/sidebar/SideBar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { AuthProvider } from "@/context/UserContext";
 import React from "react";
 
 export default function DashboardLayout({

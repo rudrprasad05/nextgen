@@ -1,6 +1,5 @@
 import axios from "axios";
 import { redirect } from "next/navigation";
-import { destroyCookie } from "nookies";
 
 export const axiosGlobal = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -31,15 +30,7 @@ axiosGlobal.interceptors.response.use(
     const res = error?.response;
 
     if (status === 401) {
-      destroyCookie(null, "token");
       redirect("/error/unauthorised");
-
-      //   if (typeof window !== "undefined") {
-      //     localStorage.removeItem("token");
-
-      //     // Redirect to login or home
-      //     window.location.href = "/error/unauthorised";
-      //   }
     }
 
     return {
@@ -48,5 +39,5 @@ axiosGlobal.interceptors.response.use(
       status: res?.status ?? 400,
       message: res?.data?.message || error.message || "Unknown error",
     };
-  }
+  },
 );

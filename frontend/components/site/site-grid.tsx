@@ -1,17 +1,17 @@
 "use client";
 
 import { GetAllSites } from "@/actions/site";
-import { useAuth } from "@/context/UserContext";
-import { type Site } from "@/lib/models";
-import { ApiResponse, FIVE_MINUTE_CACHE, QueryObject } from "@/lib/models";
+import { useAuth } from "@/context/AuthContext";
+import {
+  ApiResponse,
+  FIVE_MINUTE_CACHE,
+  QueryObject,
+  type Site,
+} from "@/lib/models";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useState } from "react";
 import { H1, LargeText } from "../font/Fonts";
-import {
-  LoadingCard,
-  NoDataContainer,
-  SiteCardSkeleton,
-} from "../global/LoadingContainer";
+import { SiteCardSkeleton } from "../global/LoadingContainer";
 import PaginationSection from "../global/PaginationSection";
 import { SectionHeader } from "../global/SectionHeader";
 import { NewSiteButton } from "./new-site-button";

@@ -14,6 +14,7 @@ using Backend.Models;
 using Backend.Models.DTO;
 using Backend.Models.Response;
 using static Backend.Models.Request.AuthRequestObject;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
@@ -112,8 +113,9 @@ namespace Backend.Controllers
                 Response.Cookies.Append("token", tokenString, new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = true,  // Set to false for local development
-                    SameSite = SameSiteMode.Strict,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Domain = ".localhost",
                     Expires = DateTime.UtcNow.AddHours(1)
                 });
 
@@ -152,52 +154,28 @@ namespace Backend.Controllers
         [HttpGet("me")]
         public async Task<IActionResult> GetCurrentUser()
         {
-            try
-            {
-                var authHeader = Request.Headers["Authorization"].FirstOrDefault();
-                if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+            var email = User.FindFirstValue(ClaimTypes.Email);
+
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized(ApiResponse<LoginDTO>.Fail(message: "Invalid session"));
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return Unauthorized(ApiResponse<LoginDTO>.Fail(message: "User not found"));
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return Ok(ApiResponse<LoginDTO>.Ok(
+                new LoginDTO
                 {
-                    return Unauthorized(new { message = "Token missing or invalid" });
+                    Id = user.Id,
+                    Username = user.UserName ?? "",
+                    Email = user.Email ?? "",
+                    Role = roles.FirstOrDefault() ?? "user"
                 }
-
-                var token = authHeader.Substring(7);
-                var handler = new JwtSecurityTokenHandler();
-                var jwtToken = handler.ReadJwtToken(token);
-
-                var email = jwtToken.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
-                if (string.IsNullOrEmpty(email))
-                {
-                    return Unauthorized(new { message = "Invalid token" });
-                }
-
-                var user = await _userManager.FindByEmailAsync(email);
-                if (user == null)
-                {
-                    return NotFound(new { message = "User not found" });
-                }
-
-                var roles = await _userManager.GetRolesAsync(user);
-                var userRole = roles.FirstOrDefault() ?? "user";
-
-                return Ok(
-                    ApiResponse<LoginDTO>.Ok(
-                        data: new LoginDTO
-                        {
-                            Username = user.UserName ?? string.Empty,
-                            Email = user.Email ?? string.Empty,
-                            Id = user.Id,
-                            Token = token,
-                            Role = userRole
-                        }
-                    )
-
-                );
-            }
-            catch
-            {
-                return Unauthorized(new { message = "Invalid or expired token" });
-            }
+            ));
         }
+
 
 
     }
