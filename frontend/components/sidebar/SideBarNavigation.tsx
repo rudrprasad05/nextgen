@@ -9,7 +9,15 @@ import {
 import { useAuth } from "@/context/UserContext";
 import { cn } from "@/lib/utils";
 
-import { Globe, LayoutDashboard, LucideIcon, UsersIcon } from "lucide-react";
+import {
+  BarChart,
+  BookA,
+  Cog,
+  Globe,
+  LayoutDashboard,
+  LucideIcon,
+  UsersIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -19,7 +27,11 @@ interface INavArr {
   icon: LucideIcon;
 }
 
-export function SideBarNavigation() {
+interface SideBarProps {
+  type?: "admin-dashboard" | "site-dashboard" | undefined;
+}
+
+export function SideBarNavigation({ type }: SideBarProps) {
   const pathname = usePathname();
   const { user } = useAuth();
 
@@ -28,29 +40,78 @@ export function SideBarNavigation() {
 
   console.log(segments);
 
-  const superAdminItems: INavArr[] = [
-    {
-      title: "Dashboard",
-      href: "/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      title: "Users",
-      href: "/dashboard/users",
-      icon: UsersIcon,
-    },
-    {
-      title: "Sites",
-      href: "/dashboard/sites",
-      icon: Globe,
-    },
-  ];
+  let items: INavArr[];
+
+  switch (type) {
+    case "admin-dashboard":
+      items = [
+        {
+          title: "Dashboard",
+          href: "/dashboard",
+          icon: LayoutDashboard,
+        },
+        {
+          title: "Users",
+          href: "/dashboard/users",
+          icon: UsersIcon,
+        },
+        {
+          title: "Sites",
+          href: "/dashboard/sites",
+          icon: Globe,
+        },
+      ];
+      break;
+    case "site-dashboard":
+      items = [
+        {
+          title: "Dashboard",
+          href: "/admin",
+          icon: LayoutDashboard,
+        },
+        {
+          title: "Pages",
+          href: "/admin/pages",
+          icon: BookA,
+        },
+        {
+          title: "Stats",
+          href: "/admin/stats",
+          icon: BarChart,
+        },
+        {
+          title: "Settings",
+          href: "/admin/settings",
+          icon: Cog,
+        },
+      ];
+      break;
+    default:
+      items = items = [
+        {
+          title: "Dashboard",
+          href: "/dashboard",
+          icon: LayoutDashboard,
+        },
+        {
+          title: "Users",
+          href: "/dashboard/users",
+          icon: UsersIcon,
+        },
+        {
+          title: "Sites",
+          href: "/dashboard/sites",
+          icon: Globe,
+        },
+      ];
+      break;
+  }
 
   return (
     <SidebarGroup className="h-full">
       <SidebarGroupContent className="h-full">
         <SidebarMenu className="h-full">
-          {superAdminItems.map((item) => {
+          {items.map((item) => {
             const isActive = pathname.includes(item.href.slice(1));
             return (
               <SidebarMenuItem key={item.href}>

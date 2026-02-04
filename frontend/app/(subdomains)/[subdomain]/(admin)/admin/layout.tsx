@@ -17,7 +17,7 @@ export default function RootLayout({
     <AuthProvider>
       <SidebarProvider defaultOpen={true}>
         <div className="flex min-h-screen w-full bg-background">
-          <SideBar />
+          <SideBar type="site-dashboard" />
           <div className="flex-1 flex flex-col relative bg-background">
             <Header />
             <main className="flex-1 p-6 bg-background">{children}</main>

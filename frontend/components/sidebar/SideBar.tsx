@@ -9,7 +9,11 @@ import { SideBarLogo } from "./SideBarLogo";
 import { SideBarNavigation } from "./SideBarNavigation";
 import { SideBarUserMenu } from "./SideBarUserMenu";
 
-export function SideBar() {
+interface SideBarProps {
+  type?: "admin-dashboard" | "site-dashboard" | undefined;
+}
+
+export function SideBar({ type }: SideBarProps) {
   return (
     <Sidebar className="border-r bg-background border-primary/20">
       <SidebarHeader className="border-b border-primary/20 border-solid p-4">
@@ -17,7 +21,7 @@ export function SideBar() {
       </SidebarHeader>
 
       <SidebarContent className="p-2">
-        <SideBarNavigation />
+        <SideBarNavigation type={type} />
       </SidebarContent>
 
       <SidebarFooter className="border-t border-solid border-primary/20 p-2">

@@ -128,7 +128,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (!data) {
       toast.error("An error occurred", { description: resp.message });
-      return;
     }
 
     console.log("hit3", res);
@@ -145,11 +144,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const checkAuth = useCallback(async () => {
     const token = localStorage.getItem("token");
     const isAdmin = pathname.includes("admin");
-    let tempUser: User = JSON.parse(localStorage.getItem("user") ?? "");
+    let tempUser: User | null = null;
+
+    try {
+      tempUser = JSON.parse(localStorage.getItem("user") ?? "");
+    } catch (error) {
+      logout();
+    }
 
     if (tempUser) {
       setUser(tempUser);
       return;
+    } else {
+      logout();
     }
 
     if (isAdmin)
