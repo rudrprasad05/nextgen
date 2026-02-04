@@ -1,3 +1,5 @@
+import { PageSchema } from "../page-builder/types";
+
 export interface User {
   id: string;
   username: string;
@@ -37,6 +39,31 @@ export enum UserRoles {
   ADMIN = "ADMIN",
   CASHIER = "CASHIER",
   USER = "USER",
+}
+
+export interface Site extends BaseModel {
+  name: string;
+  updatedAt: string;
+  status: "draft" | "published";
+  screenshot?: Media | null;
+  pages: Page[];
+}
+
+export enum PageStatus {
+  Draft = "Draft",
+  Published = "Published",
+}
+
+export interface Page {
+  id: string; // Equivalent to BaseModel.Id
+  createdAt: Date; // BaseModel.CreatedAt
+  updatedAt: Date; // BaseModel.UpdatedAt
+  siteId: string; // Foreign key
+  slug: string;
+  title: string;
+  status: PageStatus;
+  schema: PageSchema; // Stored as JSON
+  site: Site; // Navigation property
 }
 
 export interface Media extends BaseModel {

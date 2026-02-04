@@ -18,7 +18,7 @@ namespace Backend.Models.Request
         public string OwnerId { get; set; } = null!;
 
         // base64 data URL
-        public string? Favicon { get; set; }
+        public IFormFile? Favicon { get; set; }
 
         public SiteStatus Status { get; set; } = SiteStatus.Draft;
     }

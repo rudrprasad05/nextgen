@@ -12,6 +12,7 @@ namespace Backend.Interfaces
     public interface ISiteService
     {
         Task<Site> CreateSiteAsync(CreateSiteRequestDto dto, string ownerId);
+        Task<ApiResponse<SiteDto>> GetSiteJsonAsync(string subdomain);
         Task<ApiResponse<List<OnlySiteDto>>> GetAllSitesForUserAsync(RequestQueryObject queryObject);
     }
 

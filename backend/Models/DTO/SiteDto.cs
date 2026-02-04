@@ -12,9 +12,20 @@ namespace Backend.Models.DTO
         public string Slug { get; set; } = null!;
         public string OwnerId { get; set; } = null!;
         public SiteStatus Status { get; set; } = SiteStatus.Draft;
-        public Media? Screenshot { get; set; } = null;
+        public MediaDto? Screenshot { get; set; } = null;
         public Guid? ScreenshotId { get; set; } = null;
-        public ICollection<Page> Pages { get; set; } = new List<Page>();
+        public long? NumberOfPages { get; set; } = 0;
+    }
+
+    public class SiteDto : BaseDTO
+    {
+        public string Name { get; set; } = null!;
+        public string Slug { get; set; } = null!;
+        public string OwnerId { get; set; } = null!;
+        public SiteStatus Status { get; set; } = SiteStatus.Draft;
+        public MediaDto? Screenshot { get; set; } = null;
+        public Guid? ScreenshotId { get; set; } = null;
+        public ICollection<PageDto> Pages { get; set; } = new List<PageDto>();
         public long? NumberOfPages { get; set; } = 0;
     }
 }

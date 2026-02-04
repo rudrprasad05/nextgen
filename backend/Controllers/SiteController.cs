@@ -6,9 +6,8 @@ using Backend.Interfaces;
 using Backend.Models.Request;
 using Backend.Models.Response;
 using Backend.Controllers;
-using Backend.Interfaces;
-using Backend.Models.Response;
 using Microsoft.AspNetCore.Mvc;
+using Backend.Models;
 
 namespace Backend.Controllers
 {
@@ -30,9 +29,31 @@ namespace Backend.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateSite([FromBody] CreateSiteRequestDto dto)
+        public async Task<IActionResult> CreateSite(
+            [FromForm] string name,
+            [FromForm] string slug,
+            [FromForm] string description,
+            [FromForm] string template,
+            [FromForm] string defaultSeoTitle,
+            [FromForm] string defaultSeoDescription,
+            [FromForm] string ownerId,
+            [FromForm] SiteStatus status,
+            IFormFile? favicon
+        )
         {
             var userId = GetCurrentUserId();
+            var dto = new CreateSiteRequestDto
+            {
+                Name = name,
+                Slug = slug,
+                Description = description,
+                Template = string.IsNullOrWhiteSpace(template) ? "blank" : template,
+                DefaultSeoTitle = defaultSeoTitle,
+                DefaultSeoDescription = defaultSeoDescription,
+                OwnerId = userId ?? ownerId,
+                Favicon = favicon,
+                Status = status
+            };
             var site = await _siteService.CreateSiteAsync(dto, userId ?? dto.OwnerId);
             return Ok(ApiResponse<SiteResponseDto>.Ok(new SiteResponseDto
             {
@@ -43,11 +64,15 @@ namespace Backend.Controllers
             }));
         }
 
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetSite(Guid id)
+        [HttpGet("get-json/{subdomain}")]
+        public async Task<IActionResult> GetSiteWithPagesJson(string subdomain)
         {
-            // stub for CreatedAtAction
-            return Ok();
+            var model = await _siteService.GetSiteJsonAsync(subdomain);
+            if (!model.Success)
+            {
+                return StatusCode(model.StatusCode, model);
+            }
+            return Ok(model);
         }
 
         [HttpGet("get-all")]

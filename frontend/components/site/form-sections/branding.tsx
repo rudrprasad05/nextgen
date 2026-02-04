@@ -1,64 +1,63 @@
-"use client"
+"use client";
 
-import React from "react"
+import React from "react";
 
-import { useState, useRef } from "react"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Palette, Upload, X, ImageIcon } from "lucide-react"
+import { useState, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Palette, Upload, X, ImageIcon } from "lucide-react";
 
 interface BrandingProps {
-  favicon: string | null
-  onFaviconChange: (value: string | null) => void
+  favicon: File | null;
+  onFaviconChange: (value: File | null) => void;
 }
 
 export function Branding({ favicon, onFaviconChange }: BrandingProps) {
-  const [dragActive, setDragActive] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [dragActive, setDragActive] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
 
   const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true)
+      setDragActive(true);
     } else if (e.type === "dragleave") {
-      setDragActive(false)
+      setDragActive(false);
     }
-  }
+  };
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(false)
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files[0])
+      handleFile(e.dataTransfer.files[0]);
     }
-  }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     if (e.target.files && e.target.files[0]) {
-      handleFile(e.target.files[0])
+      handleFile(e.target.files[0]);
     }
-  }
+  };
 
   const handleFile = (file: File) => {
     if (file.type.startsWith("image/")) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        onFaviconChange(e.target?.result as string)
-      }
-      reader.readAsDataURL(file)
+      const previewUrl = URL.createObjectURL(file);
+      onFaviconChange(file);
+      setFaviconPreview(previewUrl);
     }
-  }
+  };
 
   const handleRemove = () => {
-    onFaviconChange(null)
+    onFaviconChange(null);
     if (inputRef.current) {
-      inputRef.current.value = ""
+      inputRef.current.value = "";
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -68,22 +67,32 @@ export function Branding({ favicon, onFaviconChange }: BrandingProps) {
         </div>
         <div>
           <h2 className="text-lg font-semibold text-foreground">Branding</h2>
-          <p className="text-sm text-muted-foreground">Upload a favicon for your site</p>
+          <p className="text-sm text-muted-foreground">
+            Upload a favicon for your site
+          </p>
         </div>
       </div>
 
       <div className="space-y-4">
         <div className="space-y-2">
           <Label>Favicon</Label>
-          
+
           {favicon ? (
             <div className="flex items-center gap-4 p-4 rounded-lg border border-border bg-card">
               <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-muted overflow-hidden">
-                <img src={favicon || "/placeholder.svg"} alt="Favicon preview" className="w-8 h-8 object-contain" />
+                <img
+                  src={faviconPreview || "/placeholder.svg"}
+                  alt="Favicon preview"
+                  className="w-8 h-8 object-contain"
+                />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Favicon uploaded</p>
-                <p className="text-xs text-muted-foreground">Click remove to upload a different image</p>
+                <p className="text-sm font-medium text-foreground">
+                  Favicon uploaded
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Click remove to upload a different image
+                </p>
               </div>
               <Button
                 type="button"
@@ -130,12 +139,12 @@ export function Branding({ favicon, onFaviconChange }: BrandingProps) {
               </Button>
             </div>
           )}
-          
+
           <p className="text-xs text-muted-foreground">
             Recommended: 32x32 or 64x64 pixels. PNG, ICO, or SVG format.
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }

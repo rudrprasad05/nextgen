@@ -16,11 +16,13 @@ namespace Backend.Services
     {
         private readonly ApplicationDbContext _db;
         private readonly ISiteMapper _siteMapper;
+        private readonly IMediaRepository _mediaRepository;
 
-        public SiteService(ApplicationDbContext db, ISiteMapper siteMapper)
+        public SiteService(ApplicationDbContext db, ISiteMapper siteMapper, IMediaRepository mediaRepository)
         {
             _db = db;
             _siteMapper = siteMapper;
+            _mediaRepository = mediaRepository;
         }
 
         public async Task<ApiResponse<List<OnlySiteDto>>> GetAllSitesForUserAsync(RequestQueryObject queryObject)
@@ -33,25 +35,33 @@ namespace Backend.Services
 
             var sites = await _db.Sites
                 .Where(x => x.OwnerId == queryObject.UUID.ToString() && !x.IsDeleted)
+                .Include(s => s.Screenshot)
                 .ToListAsync();
 
-            return ApiResponse<List<OnlySiteDto>>.Ok(await _siteMapper.FromModelToDtoAsync(sites));
+            return ApiResponse<List<OnlySiteDto>>.Ok(await _siteMapper.FromModelToOnlyDtoAsync(sites));
         }
         public async Task<Site> CreateSiteAsync(CreateSiteRequestDto dto, string ownerId)
         {
             // Slug uniqueness check
+            var faviconMedia = null as MediaDto;
             var slugExists = await _db.Sites.AnyAsync(x => x.Slug == dto.Slug && !x.IsDeleted);
+
             if (slugExists)
                 throw new InvalidOperationException("Slug already exists");
 
-            // if (!string.IsNullOrWhiteSpace(dto.Favicon))
-            // {
-            //     faviconMedia = await _mediaService.CreateFromBase64Async(
-            //         dto.Favicon,
-            //         ownerId,
-            //         MediaType.Favicon
-            //     );
-            // }
+            if (dto.Favicon != null)
+            {
+                var tempMedia = new Media
+                {
+                    AltText = $"Favicon for site {dto.Name}",
+                    FileName = dto.Favicon.FileName,
+                    ContentType = dto.Favicon.ContentType,
+                    SizeInBytes = dto.Favicon.Length,
+                    ShowInGallery = true,
+                    OwnerId = ownerId,
+                };
+                faviconMedia = (await _mediaRepository.CreateAsync(tempMedia, dto.Favicon)).Data;
+            }
 
             var site = new Site
             {
@@ -62,13 +72,29 @@ namespace Backend.Services
                 Status = dto.Status,
                 CreatedOn = DateTime.UtcNow,
                 UpdatedOn = DateTime.UtcNow,
-                Pages = CreateDefaultPages(dto.Template)
+                Pages = CreateDefaultPages(dto.Template),
+                ScreenshotId = faviconMedia?.Id ?? null
             };
 
             _db.Sites.Add(site);
             await _db.SaveChangesAsync();
 
             return site;
+        }
+
+
+        public async Task<ApiResponse<SiteDto>> GetSiteJsonAsync(string subdomain)
+        {
+            var site = await _db.Sites
+                .Include(x => x.Screenshot)
+                .Include(x => x.Pages.Where(p => !p.IsDeleted))
+                .FirstOrDefaultAsync(x => x.Slug == subdomain && !x.IsDeleted);
+            if (site == null)
+            {
+                return ApiResponse<SiteDto>.NotFound(message: "Site not found");
+            }
+
+            return ApiResponse<SiteDto>.Ok(await _siteMapper.FromModelToDtoAsync(site));
         }
 
         private ICollection<Page> CreateDefaultPages(string template)
@@ -107,6 +133,7 @@ namespace Backend.Services
             // extend later
             return new List<Page>();
         }
+
     }
 
 }

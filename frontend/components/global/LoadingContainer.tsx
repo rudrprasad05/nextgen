@@ -34,6 +34,29 @@ export function LoadingCard() {
   );
 }
 
+export function SiteCardSkeleton() {
+  return (
+    <Card className="p-4 animate-pulse">
+      {/* Preview */}
+      <div className="mb-3 flex aspect-video items-center justify-center rounded-md bg-muted">
+        <div className="w-full h-full rounded-md bg-muted-foreground/20" />
+      </div>
+
+      {/* Text */}
+      <div className="space-y-2">
+        {/* Site name */}
+        <div className="h-4 w-3/4 rounded bg-muted-foreground/20" />
+
+        {/* Date + badge */}
+        <div className="flex items-center justify-between">
+          <div className="h-3 w-20 rounded bg-muted-foreground/20" />
+          <div className="h-5 w-16 rounded-full bg-muted-foreground/20" />
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 export function DashboardSkeleton() {
   return (
     <div className="space-y-4 animate-pulse">

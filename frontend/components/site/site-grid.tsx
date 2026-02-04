@@ -2,12 +2,16 @@
 
 import { GetAllSites } from "@/actions/site";
 import { useAuth } from "@/context/UserContext";
-import { type Site } from "@/lib/dashboard/types";
+import { type Site } from "@/lib/models";
 import { ApiResponse, FIVE_MINUTE_CACHE, QueryObject } from "@/lib/models";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useState } from "react";
 import { H1, LargeText } from "../font/Fonts";
-import { LoadingCard, NoDataContainer } from "../global/LoadingContainer";
+import {
+  LoadingCard,
+  NoDataContainer,
+  SiteCardSkeleton,
+} from "../global/LoadingContainer";
 import PaginationSection from "../global/PaginationSection";
 import { SectionHeader } from "../global/SectionHeader";
 import { NewSiteButton } from "./new-site-button";
@@ -69,28 +73,23 @@ function HandleDataSection({
     return <div className="text-red-500">Error loading sites.</div>;
   }
 
+  if (query.isLoading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        {Array.from({ length: 10 }, (_, i) => (
+          <SiteCardSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
   const data = query.data?.data ?? [];
   const meta = query.data?.meta;
 
   console.log(query.data);
 
-  if (query.isLoading) {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {Array.from({ length: 10 }, (_, i) => (
-          <LoadingCard key={i} />
-        ))}
-      </div>
-    );
-  }
-
-  if (data.length == 0) {
-    return <NoDataContainer />;
-  }
-
   return (
     <>
-      <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {data.map((site) => (
           <SiteCard key={site.id} site={site} />
         ))}

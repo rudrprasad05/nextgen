@@ -32,7 +32,7 @@ export interface CreateSiteRequestDto {
   template: string;
   defaultSeoTitle: string;
   defaultSeoDescription: string;
-  favicon: Base64URLString | null;
+  favicon: File | null;
   status: string;
   ownerId: string;
 }
@@ -50,7 +50,7 @@ export default function CreateSitePage() {
   const [template, setTemplate] = useState("blank");
   const [seoTitle, setSeoTitle] = useState("");
   const [seoDescription, setSeoDescription] = useState("");
-  const [favicon, setFavicon] = useState<string | null>(null);
+  const [favicon, setFavicon] = useState<File | null>(null);
 
   // Validation
   const [slugError, setSlugError] = useState<string | undefined>();
@@ -93,34 +93,28 @@ export default function CreateSitePage() {
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    const siteData: CreateSiteRequestDto = {
-      name: name.trim(),
-      slug,
-      description: description.trim(),
-      template,
-      defaultSeoTitle: seoTitle.trim(),
-      defaultSeoDescription: seoDescription.trim(),
-      favicon,
-      status: "draft" as const,
-      ownerId: user?.id as string, // Replace with actual user ID
-    };
+    const formData = new FormData();
+    formData.append("name", name.trim());
+    formData.append("slug", slug);
+    formData.append("description", description.trim());
+    formData.append("template", template);
+    formData.append("defaultSeoTitle", seoTitle.trim());
+    formData.append("defaultSeoDescription", seoDescription.trim());
+    if (favicon) {
+      formData.append("favicon", favicon);
+    }
+    formData.append("status", "draft");
+    formData.append("ownerId", user?.id as string); // Replace with actual user ID
 
-    console.log("Creating site:", siteData);
+    console.log("Creating site:", formData.values());
 
-    const res = await CreateSite(siteData);
+    const res = await CreateSite(formData);
 
     if (res.success) {
       toast.success("Site created successfully!");
     }
 
     setIsSubmitting(false);
-
-    // Simulate delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Navigate to the builder with the new site
-    // router.push(`/?siteId=new-site&template=${template}`);
   };
 
   return (
