@@ -23,6 +23,18 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const goToLoginPage = () => {
+  // Read your base URL from env, e.g. NEXT_PUBLIC_BASE_URL=https://domain.com
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
+  // Construct subdomain URL
+  const subdomainUrl = new URL(baseUrl);
+  subdomainUrl.pathname = "/auth/login"; // path
+
+  // Redirect
+  window.location.href = subdomainUrl.toString();
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -135,7 +147,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // setUser(null);
 
     toast.info("Logging out");
-    router.push("/auth/login");
+
+    // goToLoginPage();
 
     localStorage.removeItem("token");
     localStorage.removeItem("user");

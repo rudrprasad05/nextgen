@@ -25,12 +25,13 @@ import { QuickActions } from "./quick-actions";
 import { GetDashboardData } from "@/actions/dash";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/UserContext";
+import { formatFileSize } from "@/lib/utils";
 
 export function DashboardStats() {
   const { user } = useAuth();
   const defaultDashboardData: DashboardData = {
     totalSites: 0,
-    totalUsers: 0,
+    totalMedia: 0,
     activeUsers: 0,
     unreadNotifications: 0,
     notifications: [],
@@ -89,7 +90,9 @@ export function DashboardStats() {
           </CardHeader>
           <CardContent className="mt-auto">
             {loading && <Loader2 className="text-2xl  animate-spin" />}
-            <div className="text-2xl font-bold ">{data?.totalMedia}</div>
+            <div className="text-2xl font-bold ">
+              {formatFileSize(data?.totalMedia)}
+            </div>
           </CardContent>
         </Card>
         <Card className="">
@@ -116,7 +119,7 @@ export function DashboardStats() {
                 Array.from({ length: 4 }, (_, i) => (
                   <SmallLoadingHorizontialCard key={i} />
                 ))}
-              {data?.notifications.map((activity, index) => (
+              {data?.notifications?.map((activity, index) => (
                 <div key={index} className="flex items-center gap-3">
                   <Avatar className="h-8 w-8">
                     <AvatarImage

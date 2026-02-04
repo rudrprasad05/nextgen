@@ -14,16 +14,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <AuthProvider>
-      <SidebarProvider defaultOpen={true}>
-        <div className="flex min-h-screen w-full bg-background">
-          <SideBar type="site-dashboard" />
-          <div className="flex-1 flex flex-col relative bg-background">
-            <Header />
-            <main className="flex-1 p-6 bg-background">{children}</main>
-          </div>
+    <SidebarProvider defaultOpen={true}>
+      <div className="flex min-h-screen w-full bg-background">
+        <SideBar type="site-dashboard" />
+        <div className="flex-1 flex flex-col relative bg-background">
+          <Header />
+          <main className="flex-1 p-6 bg-background">{children}</main>
         </div>
-      </SidebarProvider>
-    </AuthProvider>
+      </div>
+    </SidebarProvider>
   );
 }
