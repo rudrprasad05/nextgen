@@ -1,6 +1,5 @@
 "use server";
 
-import { axiosGlobal } from "@/lib/axios";
 import { ApiResponse, DashboardData, QueryObject } from "@/lib/models";
 import { RequestWrapper } from "@/lib/RequestWrapper";
 

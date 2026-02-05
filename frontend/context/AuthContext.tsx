@@ -11,8 +11,8 @@ import {
 } from "react";
 import { toast } from "sonner";
 
-import { GetMe, LoginRequest, LogoutRequest } from "@/actions/auth";
-import { User } from "@/lib/models";
+import { GetMe } from "@/actions/auth";
+import { ApiResponse, User } from "@/lib/models";
 
 interface AuthContextType {
   user: User | null;
@@ -52,32 +52,74 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
 
-    const res = await LoginRequest(email, password);
+    try {
+      const response = await fetch(`/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: "include",
+        cache: "no-store",
+      });
 
-    if (!res.success || !res.data) {
-      toast.error("Login failed", { description: res.message });
+      const res: ApiResponse<User> = await response.json();
+
+      if (!res.success || !res.data) {
+        toast.error("Login failed", { description: res.message });
+        setIsLoading(false);
+        return;
+      }
+
+      setUser(res.data);
+      localStorage.setItem("user", JSON.stringify(res.data));
+
+      toast.success("Logged in");
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Login failed", {
+        description: "An unexpected error occurred",
+      });
+    } finally {
       setIsLoading(false);
-      return;
     }
-
-    setUser(res.data);
-    localStorage.setItem("user", JSON.stringify(res.data));
-
-    toast.success("Logged in");
-    router.push("/dashboard");
-    setIsLoading(false);
   };
-
   const logout = async () => {
-    await LogoutRequest();
+    try {
+      const response = await fetch(`/api/auth/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        cache: "no-store",
+      });
 
-    setUser(null);
-    localStorage.removeItem("user");
+      const res: ApiResponse<null> = await response.json();
 
-    toast.info("Logged out");
-    router.push("/auth/login");
+      // Clear user state regardless of backend response
+      setUser(null);
+      localStorage.removeItem("user");
+
+      if (res.success) {
+        toast.info("Logged out");
+      } else {
+        toast.info("Logged out", { description: "Session cleared locally" });
+      }
+
+      router.push("/auth/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+
+      // Still clear local state even if request fails
+      setUser(null);
+      localStorage.removeItem("user");
+
+      toast.info("Logged out", { description: "Session cleared locally" });
+      router.push("/auth/login");
+    }
   };
-
   useEffect(() => {
     // 1️⃣ Load cached user instantly (UX only)
     const cached = localStorage.getItem("user");

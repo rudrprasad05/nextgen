@@ -24,18 +24,26 @@ namespace Backend.Config
             var frontend = configuration["AllowedHosts"] ?? throw new InvalidOperationException();
             var corsOriginsString = configuration["CorsOrigins"];
 
-            string[] allowedOrigins = { "https://localhost:3000", "https://test.home:3000", "https://test.home", "https://frcs-api.procyonfiji.com" };
+            string[] allowedOrigins = {
+                "http://api.test.home:5080",
+                "http://localhost:3000",
+                "http://test.home:3000",
+                "http://test.home",
+                "http://frcs-api.procyonfiji.com"
+            };
+
             services.AddCors(c =>
             {
                 c.AddPolicy("allowSpecificOrigin", options =>
                 {
                     options
-                        .WithOrigins(allowedOrigins)  // must match the exact origin
+                        .WithOrigins(allowedOrigins)
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
                 });
             });
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme =
@@ -58,7 +66,57 @@ namespace Backend.Config
                     IssuerSigningKey = new SymmetricSecurityKey(
                         System.Text.Encoding.UTF8.GetBytes(configuration["JWT:SigningKey"] ?? throw new InvalidOperationException())
                     ),
-                    RoleClaimType = ClaimTypes.Role
+                    RoleClaimType = ClaimTypes.Role,
+                    ClockSkew = TimeSpan.Zero // Optional: removes 5 min default tolerance
+                };
+
+                // THIS IS THE KEY PART - Read JWT from cookie
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        // First, try to get token from cookie
+                        if (context.Request.Cookies.TryGetValue("token", out var token))
+                        {
+                            context.Token = token;
+                        }
+                        // Fallback to Authorization header if no cookie
+                        else if (context.Request.Headers.ContainsKey("Authorization"))
+                        {
+                            var authHeader = context.Request.Headers["Authorization"].ToString();
+                            if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                            {
+                                context.Token = authHeader.Substring("Bearer ".Length).Trim();
+                            }
+                        }
+
+                        return Task.CompletedTask;
+                    },
+                    OnAuthenticationFailed = context =>
+                    {
+                        var logger = context.HttpContext.RequestServices
+                            .GetRequiredService<ILogger<Program>>();
+                        logger.LogError("JWT Authentication failed: {Error}", context.Exception.Message);
+                        logger.LogError("Exception details: {StackTrace}", context.Exception.StackTrace);
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        var logger = context.HttpContext.RequestServices
+                            .GetRequiredService<ILogger<Program>>();
+                        var userName = context.Principal?.Identity?.Name ?? "Unknown";
+                        var userId = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        logger.LogInformation("Token validated successfully for user: {UserName} (ID: {UserId})", userName, userId);
+                        return Task.CompletedTask;
+                    },
+                    OnChallenge = context =>
+                    {
+                        var logger = context.HttpContext.RequestServices
+                            .GetRequiredService<ILogger<Program>>();
+                        logger.LogWarning("JWT Challenge issued. Error: {Error}, ErrorDescription: {ErrorDescription}",
+                            context.Error, context.ErrorDescription);
+                        return Task.CompletedTask;
+                    }
                 };
             });
         }
@@ -79,9 +137,6 @@ namespace Backend.Config
             )
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
-
         }
     }
-
-
 }

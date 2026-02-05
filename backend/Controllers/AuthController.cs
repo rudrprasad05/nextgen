@@ -50,10 +50,11 @@ namespace Backend.Controllers
             Response.Cookies.Delete("token", new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Domain = ".test.home",
-                Expires = DateTime.UtcNow.AddHours(1)
+                Secure = false, // ✅ Changed to false for HTTP
+                SameSite = SameSiteMode.Lax, // ✅ Lax works fine with HTTP
+                Domain = "localhost", // ✅ Keep this
+                Path = "/",
+                Expires = DateTimeOffset.UtcNow.AddDays(7)
             });
 
             return Ok(ApiResponse<string>.Ok(data: "ok"));
@@ -115,10 +116,11 @@ namespace Backend.Controllers
                 Response.Cookies.Append("token", tokenString, new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.None,
-                    Domain = ".test.home",
-                    Expires = DateTime.UtcNow.AddHours(1)
+                    Secure = false, // ✅ Changed to false for HTTP
+                    SameSite = SameSiteMode.Lax, // ✅ Lax works fine with HTTP
+                    Domain = "localhost", // ✅ Keep this
+                    Path = "/",
+                    Expires = DateTimeOffset.UtcNow.AddDays(7)
                 });
 
                 var userRole = roles.FirstOrDefault() ?? "user";

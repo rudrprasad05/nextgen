@@ -1,5 +1,6 @@
 "use server";
 
+import { createServerAxios } from "@/lib/axios-server";
 import { Site } from "@/lib/models";
 import { ApiResponse, QueryObject, User } from "@/lib/models";
 import { RequestWrapper } from "@/lib/RequestWrapper";
@@ -7,6 +8,7 @@ import { RequestWrapper } from "@/lib/RequestWrapper";
 export async function GetAllSites(
   query: QueryObject,
 ): Promise<ApiResponse<Site[]>> {
+  console.log("GetAllSites query", query);
   return RequestWrapper<any>("GET", `sites/get-all`, { query });
 }
 

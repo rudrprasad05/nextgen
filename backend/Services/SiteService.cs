@@ -25,16 +25,16 @@ namespace Backend.Services
             _mediaRepository = mediaRepository;
         }
 
-        public async Task<ApiResponse<List<OnlySiteDto>>> GetAllSitesForUserAsync(RequestQueryObject queryObject)
+        public async Task<ApiResponse<List<OnlySiteDto>>> GetAllSitesForUserAsync(RequestQueryObject queryObject, string? userId = null)
         {
-            var exists = await _db.Users.FirstOrDefaultAsync(x => x.Id == queryObject.UUID.ToString());
+            var exists = await _db.Users.FirstOrDefaultAsync(x => x.Id == userId);
             if (exists == null)
             {
                 return ApiResponse<List<OnlySiteDto>>.NotFound(message: "the object doesnt exists");
             }
 
             var sites = await _db.Sites
-                .Where(x => x.OwnerId == queryObject.UUID.ToString() && !x.IsDeleted)
+                .Where(x => x.OwnerId == userId && !x.IsDeleted)
                 .Include(s => s.Screenshot)
                 .ToListAsync();
 

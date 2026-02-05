@@ -8,6 +8,7 @@ using Backend.Models.Response;
 using Backend.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Backend.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.Controllers
 {
@@ -76,9 +77,16 @@ namespace Backend.Controllers
         }
 
         [HttpGet("get-all")]
+        [Authorize]
         public async Task<IActionResult> GetAllSitesForUser([FromQuery] RequestQueryObject queryObject)
         {
-            var model = await _siteService.GetAllSitesForUserAsync(queryObject);
+            var userId = CurrentUserId;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(401, ApiResponse<string>.Unauthorised(message: "User ID not found in token"));
+            }
+
+            var model = await _siteService.GetAllSitesForUserAsync(queryObject, userId);
             if (!model.Success)
             {
                 return StatusCode(model.StatusCode, model);

@@ -32,11 +32,11 @@ export function SiteGrid() {
     queryFn: () =>
       GetAllSites({
         ...pagination,
-        uuid: userId!, // safe because enabled guarantees it
       }),
-    enabled: !!userId,
     staleTime: FIVE_MINUTE_CACHE,
   });
+  //   const query = useSites(pagination);
+  console.log(query);
 
   return (
     <>

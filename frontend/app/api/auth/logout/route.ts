@@ -1,6 +1,5 @@
-import { axiosGlobal } from "@/lib/axios";
+// app/api/auth/logout/route.ts
 import { ApiResponse } from "@/lib/models";
-
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -11,51 +10,49 @@ export async function POST(req: NextRequest) {
 
     if (!accessToken) {
       return NextResponse.json(
-        { message: "No authentication cookie found" },
+        {
+          success: false,
+          statusCode: 401,
+          message: "No authentication cookie found",
+          data: null,
+        },
         { status: 401 },
       );
     }
 
-    const backendRes = await axiosGlobal.get<ApiResponse<string>>(
-      `auth/logout`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        withCredentials: true,
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const response = await fetch(`${apiBaseUrl}auth/logout`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookieHeader,
+        Authorization: `Bearer ${accessToken}`,
       },
-    );
-
-    const newHeaders = new Headers();
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const setCookieHeaders: string[] | undefined = (backendRes.headers as any)[
-      "set-cookie"
-    ];
-
-    if (Array.isArray(setCookieHeaders)) {
-      setCookieHeaders.forEach((c) => newHeaders.append("Set-Cookie", c));
-    } else if (setCookieHeaders) {
-      newHeaders.append("Set-Cookie", setCookieHeaders);
-    }
-
-    return NextResponse.json(backendRes.data, {
-      status: 200,
-      headers: newHeaders,
+      credentials: "include",
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any) {
-    console.error("Logout proxy error:", err);
 
-    if (err.response?.status) {
-      return NextResponse.json(
-        { message: err.response.data?.message ?? "Unauthorized" },
-        { status: err.response.status },
-      );
+    const data: ApiResponse<string> = await response.json();
+
+    // Extract set-cookie headers
+    const setCookieHeader = response.headers.get("set-cookie");
+    const headers = new Headers();
+    if (setCookieHeader) {
+      headers.append("Set-Cookie", setCookieHeader);
     }
 
+    return NextResponse.json(data, {
+      status: response.status,
+      headers,
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
     return NextResponse.json(
-      { message: "Internal server error" },
+      {
+        success: false,
+        statusCode: 500,
+        message: "Internal server error",
+        data: null,
+      },
       { status: 500 },
     );
   }
