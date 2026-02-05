@@ -55,10 +55,7 @@ export enum PageStatus {
   Published = "Published",
 }
 
-export interface Page {
-  id: string; // Equivalent to BaseModel.Id
-  createdAt: Date; // BaseModel.CreatedAt
-  updatedAt: Date; // BaseModel.UpdatedAt
+export interface Page extends BaseModel {
   siteId: string; // Foreign key
   slug: string;
   title: string;
@@ -120,6 +117,7 @@ export interface QueryObject {
   isAvailable?: boolean;
   search?: string;
   userId?: string;
+  slug?: string;
 }
 
 export enum ESortBy {

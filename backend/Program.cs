@@ -65,6 +65,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<IMediaRepository, MediaRepository>();
+builder.Services.AddScoped<IPagesRepository, PagesRepository>();
 
 builder.Services.AddScoped<IUserMapper, UserMapper>();
 builder.Services.AddScoped<ISiteMapper, SiteMapper>();

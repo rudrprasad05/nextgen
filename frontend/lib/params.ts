@@ -18,5 +18,7 @@ export function createQueryObject(query?: QueryObject): QueryObject {
     showInGallery: query.showInGallery,
     isDeleted: query.isDeleted,
     uuid: query.uuid,
+    slug: query.slug,
+    search: query.search,
   };
 }

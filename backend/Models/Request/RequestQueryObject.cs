@@ -21,6 +21,7 @@ namespace Backend.Models.Request
         public bool? IsDeleted { get; set; } = null;
         public ESortBy? SortBy { get; set; } = null;
         public string? Role { get; set; } = null;
+        public string? Slug { get; set; } = null;
         public Guid? UUID { get; set; } = null;
         public string? UserId { get; set; } = null;
         public string? Search { get; set; } = string.Empty;
