@@ -9,16 +9,24 @@ export const buildMediaQueryParams = (query?: QueryObject) => {
 export function createQueryObject(query?: QueryObject): QueryObject {
   const MAX_PAGE_SIZE = 100;
 
-  if (!query) return {};
+  // Start with safe defaults
+  const defaults: QueryObject = {
+    pageNumber: 1,
+    pageSize: 10,
+  };
 
+  if (!query) {
+    return defaults;
+  }
+
+  // Take everything from input + apply defaults + clamp pageSize
   return {
-    sortBy: query.sortBy,
-    pageNumber: query.pageNumber ?? 1,
-    pageSize: Math.min(query.pageSize ?? 10, MAX_PAGE_SIZE),
-    showInGallery: query.showInGallery,
-    isDeleted: query.isDeleted,
-    uuid: query.uuid,
-    slug: query.slug,
-    search: query.search,
+    ...defaults,
+    ...query, // ← spread takes care of all fields
+    pageSize: Math.min(
+      (query.pageSize ?? defaults.pageSize) || 1,
+      MAX_PAGE_SIZE,
+    ),
+    pageNumber: query.pageNumber ?? defaults.pageNumber,
   };
 }
