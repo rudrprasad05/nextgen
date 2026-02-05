@@ -12,7 +12,7 @@ namespace Backend.Interfaces
 {
     public interface IDashboardRepository
     {
-        Task<ApiResponse<DashboardDto>> GetAdminDashboard(RequestQueryObject queryObject);
+        Task<ApiResponse<DashboardDto>> GetAdminDashboard(RequestQueryObject queryObject, string? userId = null);
     }
 
 }

@@ -28,7 +28,12 @@ namespace backend.Controllers
         [HttpGet("admin-dashboard")]
         public async Task<IActionResult> GetAdminDashboard([FromQuery] RequestQueryObject queryObject)
         {
-            var media = await _dashboardRepository.GetAdminDashboard(queryObject);
+            var userId = CurrentUserId;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(401, ApiResponse<string>.Unauthorised(message: "User ID not found in token"));
+            }
+            var media = await _dashboardRepository.GetAdminDashboard(queryObject, userId);
             if (media == null)
             {
                 return BadRequest(ApiResponse<string>.Fail(message: "fail"));

@@ -1,6 +1,8 @@
 // app/[subdomain]/page.tsx
 import { GetSiteJson } from "@/actions/site";
 import { CanvasElement } from "@/components/page-builder/canvas-element";
+import SiteCanvas from "@/components/site/site-canvas";
+import { useSite } from "@/context/SiteContext";
 import { Site } from "@/lib/models";
 import { generateReactStyleObject } from "@/packages/generate-page";
 
@@ -42,27 +44,6 @@ export default async function Page({
   params: Promise<{ subdomain: string }>;
 }) {
   const { subdomain } = await params;
-  const site = await fetchSite(subdomain);
 
-  if (!site) return <div>Site not found</div>;
-
-  let mainPage = site.pages[0];
-
-  console.log("page", mainPage);
-  console.log("site", site);
-
-  return (
-    <main>
-      <img src={site.screenshot?.url} />
-      <div className="flex flex-col gap-4">
-        {mainPage.schema.root.children?.map((element) => (
-          <CanvasElement
-            key={element.id}
-            element={element}
-            parentId={mainPage.schema.root.id}
-          />
-        ))}
-      </div>
-    </main>
-  );
+  return <SiteCanvas subdomain={subdomain} />;
 }

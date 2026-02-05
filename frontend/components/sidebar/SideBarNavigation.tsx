@@ -19,7 +19,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 
 interface INavArr {
   title: string;
@@ -33,6 +33,8 @@ interface SideBarProps {
 
 export function SideBarNavigation({ type }: SideBarProps) {
   const pathname = usePathname();
+  const { subdomain } = useParams();
+
   const { user } = useAuth();
 
   const segments = pathname.split("/").filter(Boolean);
@@ -66,22 +68,22 @@ export function SideBarNavigation({ type }: SideBarProps) {
       items = [
         {
           title: "Dashboard",
-          href: "/admin",
+          href: "/" + subdomain + "/admin",
           icon: LayoutDashboard,
         },
         {
           title: "Pages",
-          href: "/admin/pages",
+          href: "/" + subdomain + "/admin/pages",
           icon: BookA,
         },
         {
           title: "Stats",
-          href: "/admin/stats",
+          href: "/" + subdomain + "/admin/stats",
           icon: BarChart,
         },
         {
           title: "Settings",
-          href: "/admin/settings",
+          href: "/" + subdomain + "/admin/settings",
           icon: Cog,
         },
       ];

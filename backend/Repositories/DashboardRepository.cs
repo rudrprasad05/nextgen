@@ -18,22 +18,22 @@ namespace Backend.Repositories
         {
             _context = context;
         }
-        public async Task<ApiResponse<DashboardDto>> GetAdminDashboard(RequestQueryObject queryObject)
+        public async Task<ApiResponse<DashboardDto>> GetAdminDashboard(RequestQueryObject queryObject, string? userId = null)
         {
             long totalMedia = await _context.Medias
                 .Where(m => !m.IsDeleted)
                 .SumAsync(m => m.SizeInBytes);
             long totalSites = await _context.Sites
-                .Where(m => m.OwnerId == queryObject.UserId)
+                .Where(m => m.OwnerId == userId && !m.IsDeleted)
                 .CountAsync();
             long totalUsers = await _context.Users.CountAsync();
             var notifications = await _context.Notifications
-                .Where(n => n.UserId == queryObject.UserId)
+                .Where(n => n.UserId == userId)
                 .OrderByDescending(n => n.CreatedOn)
                 .ToListAsync();
 
             long unreadCount = await _context.Notifications
-                .Where(n => n.UserId == queryObject.UserId)
+                .Where(n => n.UserId == userId)
                 .CountAsync(n => !n.IsRead);
 
 
