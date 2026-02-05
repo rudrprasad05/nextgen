@@ -3,6 +3,10 @@
 import { useSite } from "@/context/SiteContext";
 
 export default function SettingPenal() {
-  const { site } = useSite();
-  return <div>{site?.name}</div>;
+  const { site, currentPage } = useSite();
+  return (
+    <div>
+      {site?.name} {currentPage?.slug}
+    </div>
+  );
 }

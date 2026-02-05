@@ -75,7 +75,7 @@ export interface Media extends BaseModel {
 }
 
 export interface BaseModel {
-  id: number;
+  id: string;
   uuid: string;
   createdOn: string;
   updatedOn: string;

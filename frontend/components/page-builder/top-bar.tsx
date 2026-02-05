@@ -7,7 +7,7 @@ import {
   exportJSON,
   exportNextJS,
 } from "@/lib/page-builder/export";
-import { ArrowLeft, FileJson, RotateCcw } from "lucide-react";
+import { ArrowLeft, File, RotateCcw } from "lucide-react";
 import { ExportButton } from "./export-button";
 
 export function TopBar() {
@@ -55,11 +55,11 @@ export function TopBar() {
           <RotateCcw className="h-4 w-4 mr-2" />
           Clear
         </Button>
-        <Button variant="outline" size="sm" onClick={handleExportJSON}>
-          <FileJson className="h-4 w-4 mr-2" />
-          Export JSON
-        </Button>
         <ExportButton schema={schema} />
+        <Button variant="default" size="sm" onClick={handleExportJSON}>
+          <File className="h-4 w-4 mr-2" />
+          Save
+        </Button>
       </div>
     </header>
   );

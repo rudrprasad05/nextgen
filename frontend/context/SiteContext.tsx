@@ -1,22 +1,14 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { toast } from "sonner";
+import { createContext, ReactNode, useContext, useState } from "react";
 
-import { GetMe } from "@/actions/auth";
-import { ApiResponse, Site, User } from "@/lib/models";
+import { Page, Site } from "@/lib/models";
 
 interface SiteContextType {
   site: Site | null;
+  currentPage: Page | null;
   setInitialSite: (site: Site) => void;
+  setCurrentPageHelper: (page: Page) => void;
   isLoading: boolean;
 }
 
@@ -24,14 +16,27 @@ const SiteContext = createContext<SiteContextType | undefined>(undefined);
 
 export function SiteProvider({ children }: { children: ReactNode }) {
   const [site, setSite] = useState<Site | null>(null);
+  const [currentPage, setCurrentPage] = useState<Page | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const setInitialSite = (site: Site) => {
     setSite(site);
   };
 
+  const setCurrentPageHelper = (page: Page) => {
+    setCurrentPage(page);
+  };
+
   return (
-    <SiteContext.Provider value={{ site, isLoading, setInitialSite }}>
+    <SiteContext.Provider
+      value={{
+        site,
+        isLoading,
+        setInitialSite,
+        setCurrentPageHelper,
+        currentPage,
+      }}
+    >
       {children}
     </SiteContext.Provider>
   );

@@ -15,6 +15,7 @@ import { useEditor } from "@/context/editor-context";
 import { ELEMENT_LABELS } from "@/lib/page-builder/types";
 import { cn } from "@/lib/utils";
 import { Bold, Italic, Trash, Underline } from "lucide-react";
+import PElement from "./elements/p-element";
 
 export function InspectorPanel() {
   const { selectedId, getElement, updateElement, deleteElement } = useEditor();
@@ -131,64 +132,7 @@ export function InspectorPanel() {
           </section>
         )}
 
-        {element.type === "p" && (
-          <section className="space-y-3">
-            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              Content
-            </h3>
-            <div className="space-y-2">
-              <Label htmlFor="content" className="text-xs">
-                Text
-              </Label>
-              <Textarea
-                id="content"
-                value={element.props.content || ""}
-                onChange={(e) => updateProp("content", e.target.value)}
-                className="text-sm min-h-24"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lineHeight" className="text-xs">
-                Line Height
-              </Label>
-              <Select
-                value={element.styles.lineHeight || "1.6"}
-                onValueChange={(value) => updateStyle("lineHeight", value)}
-              >
-                <SelectTrigger className="h-8 text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1.2">Tight</SelectItem>
-                  <SelectItem value="1.4">Normal</SelectItem>
-                  <SelectItem value="1.6">Relaxed</SelectItem>
-                  <SelectItem value="2">Loose</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="maxWidth" className="text-xs">
-                Max Width
-              </Label>
-              <Select
-                value={element.styles.maxWidth || "none"}
-                onValueChange={(value) =>
-                  updateStyle("maxWidth", value === "none" ? "" : value)
-                }
-              >
-                <SelectTrigger className="h-8 text-sm">
-                  <SelectValue placeholder="None" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  <SelectItem value="400px">Small (400px)</SelectItem>
-                  <SelectItem value="600px">Medium (600px)</SelectItem>
-                  <SelectItem value="800px">Large (800px)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </section>
-        )}
+        <PElement element={element} />
 
         {element.type === "image" && (
           <section className="space-y-3">

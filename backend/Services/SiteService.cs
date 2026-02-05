@@ -82,6 +82,21 @@ namespace Backend.Services
             return site;
         }
 
+        public async Task<ApiResponse<SiteDto>> GetSiteWithPagesAsync(RequestQueryObject queryObject, string? userId = null)
+        {
+            var site = await _db.Sites
+            .Include(x => x.Pages)
+            .FirstOrDefaultAsync(x => x.OwnerId == userId && x.Slug == queryObject.Slug && !x.IsDeleted);
+
+            if (site == null)
+            {
+                return ApiResponse<SiteDto>.NotFound(message: "Site not found");
+            }
+
+            return ApiResponse<SiteDto>.Ok(await _siteMapper.FromModelToDtoAsync(site));
+        }
+
+
 
         public async Task<ApiResponse<SiteDto>> GetSiteJsonAsync(string subdomain)
         {

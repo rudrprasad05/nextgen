@@ -1,7 +1,10 @@
 "use client";
 
+import { GetOneSiteWithPagesBySlug } from "@/actions/site";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { EditorProvider, useEditor } from "@/context/editor-context";
+import { useSite } from "@/context/SiteContext";
+import { FIVE_MINUTE_CACHE, Site } from "@/lib/models";
 import type { ElementType } from "@/lib/page-builder/types";
 import { ELEMENT_LABELS } from "@/lib/page-builder/types";
 import { cn } from "@/lib/utils";
@@ -16,7 +19,10 @@ import {
   type DragStartEvent,
 } from "@dnd-kit/core";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 import { useState } from "react";
+import { FullPageLoader } from "../global/LoadingContainer";
 import { ScrollArea } from "../ui/scroll-area";
 import { EditorCanvas } from "./editor-canvas";
 import { ElementsPalette } from "./elements-palette";
@@ -130,7 +136,40 @@ function EditorContent() {
   );
 }
 
-export function PageBuilder() {
+interface PageBuilderProps {
+  slug: string;
+}
+
+export function PageBuilder({ slug }: PageBuilderProps) {
+  const { setInitialSite, setCurrentPageHelper } = useSite();
+  const { pageId } = useParams<{ pageId: string }>();
+
+  console.log("params", pageId);
+
+  const query = useQuery({
+    queryKey: ["site-admin-page-builder", slug],
+    queryFn: () => GetOneSiteWithPagesBySlug(slug),
+    staleTime: FIVE_MINUTE_CACHE,
+  });
+
+  if (query.isError) {
+    return <div className="text-red-500">Error loading sites.</div>;
+  }
+
+  if (query.isLoading) {
+    return <FullPageLoader />;
+  }
+  const data = query.data?.data as Site;
+
+  console.log("pb", data);
+
+  setInitialSite(data);
+
+  const currentPage = data.pages.filter((x) => x.id == pageId)[0];
+  console.log("currentPage", currentPage);
+
+  setCurrentPageHelper(currentPage);
+
   return (
     <EditorProvider>
       <EditorContent />

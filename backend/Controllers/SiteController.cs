@@ -94,5 +94,23 @@ namespace Backend.Controllers
             return Ok(model);
         }
 
+        [HttpGet("get-site-with-pages")]
+        [Authorize]
+        public async Task<IActionResult> GetSiteWithPages([FromQuery] RequestQueryObject queryObject)
+        {
+            var userId = CurrentUserId;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(401, ApiResponse<string>.Unauthorised(message: "User ID not found in token"));
+            }
+
+            var model = await _siteService.GetSiteWithPagesAsync(queryObject, userId);
+            if (!model.Success)
+            {
+                return StatusCode(model.StatusCode, model);
+            }
+            return Ok(model);
+        }
+
     }
 }

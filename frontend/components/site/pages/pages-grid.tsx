@@ -1,30 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import Link from "next/link";
-import {
-  Search,
-  ArrowUpDown,
-  Plus,
-  FileText,
-  ChevronLeft,
-  ChevronRight,
-  AlertCircle,
-  RefreshCw,
-} from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { PageCard } from "./page-card";
-import { PageCardSkeleton } from "./page-card-skeleton";
-import { SectionHeader } from "@/components/global/SectionHeader";
+import { GetPagesForOneSite } from "@/actions/page";
 import { H1, LargeText } from "@/components/font/Fonts";
-import { NewPageButton } from "./new-page-button";
+import PaginationSection from "@/components/global/PaginationSection";
+import { SectionHeader } from "@/components/global/SectionHeader";
+import { Button } from "@/components/ui/button";
 import {
   ApiResponse,
   FIVE_MINUTE_CACHE,
@@ -32,8 +12,11 @@ import {
   QueryObject,
 } from "@/lib/models";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { GetPagesForOneSite } from "@/actions/page";
-import PaginationSection from "@/components/global/PaginationSection";
+import { AlertCircle, RefreshCw } from "lucide-react";
+import { useState } from "react";
+import { NewPageButton } from "./new-page-button";
+import { PageCard } from "./page-card";
+import { PageCardSkeleton } from "./page-card-skeleton";
 
 interface PagesGridProps {
   siteSlug: string;

@@ -1,7 +1,5 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
-import { MoreHorizontal, Eye, Pencil, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,8 +11,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { PageStatus, type Page } from "@/lib/models";
-import { useSite } from "@/context/SiteContext";
+import { ExternalLink, Eye, MoreHorizontal, Pencil } from "lucide-react";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
@@ -48,6 +47,8 @@ export function PageCard({ page }: PageCardProps) {
   const handleView = () => {
     window.open(`/${params.subdomain}`, "_blank");
   };
+
+  console.log("debug", page);
 
   return (
     <Card
