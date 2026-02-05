@@ -21,9 +21,9 @@ export function EditorCanvas() {
 
   const handleCanvasClick = (e: React.MouseEvent) => {
     // setSelectedId(null);
-    if (e.target === e.currentTarget) {
-      setSelectedId("body"); // select the root
-    }
+    // if (e.target === e.currentTarget) {
+    setSelectedId("body"); // select the root
+    // }
   };
 
   return (

@@ -1,22 +1,27 @@
 "use client";
 
-import {
-  DndContext,
-  DragOverlay,
-  useSensor,
-  useSensors,
-  PointerSensor,
-  type DragStartEvent,
-  type DragEndEvent,
-  type DragOverEvent,
-} from "@dnd-kit/core";
-import { useState } from "react";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { EditorProvider, useEditor } from "@/context/editor-context";
 import type { ElementType } from "@/lib/page-builder/types";
 import { ELEMENT_LABELS } from "@/lib/page-builder/types";
-import { ElementsPalette } from "./elements-palette";
+import { cn } from "@/lib/utils";
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragOverEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core";
+import * as TabsPrimitive from "@radix-ui/react-tabs";
+import { useState } from "react";
+import { ScrollArea } from "../ui/scroll-area";
 import { EditorCanvas } from "./editor-canvas";
+import { ElementsPalette } from "./elements-palette";
 import { InspectorPanel } from "./inspector-panel";
+import SettingPenal from "./settings-panel";
 import { TopBar } from "./top-bar";
 
 function DragOverlayContent({ type }: { type: ElementType }) {
@@ -114,7 +119,7 @@ function EditorContent() {
         <div className="flex flex-1 overflow-hidden">
           <ElementsPalette />
           <EditorCanvas />
-          <InspectorPanel />
+          <ConfigPanel />
         </div>
       </div>
 
@@ -130,5 +135,45 @@ export function PageBuilder() {
     <EditorProvider>
       <EditorContent />
     </EditorProvider>
+  );
+}
+
+function ConfigPanel() {
+  const [state, setState] = useState<"Inspector" | "Settings">("Inspector");
+
+  // return <InspectorPanel/>
+  return (
+    <Tabs defaultValue="Select" className="relative flex flex-col w-72">
+      <TabsPrimitive.List className="w-full border-solid border-b border-border flex flex-row pt-2 sticky top-0">
+        <TabsPrimitive.Trigger
+          onClick={() => setState("Inspector")}
+          className={cn(
+            "text-sm  px-8 grow cursor-pointer py-4 text-center border-solid border-blue-500 hover:border-b transition",
+            state == "Inspector" ? "border-b" : "border-none",
+          )}
+          value="Inspector"
+        >
+          Inspector
+        </TabsPrimitive.Trigger>
+        <TabsPrimitive.Trigger
+          onClick={() => setState("Settings")}
+          className={cn(
+            "text-sm  grow px-8 cursor-pointer py-2 text-center border-solid border-blue-500 hover:border-b transition",
+            state == "Settings" ? "border-b" : "border-none",
+          )}
+          value="Settings"
+        >
+          Settings
+        </TabsPrimitive.Trigger>
+      </TabsPrimitive.List>
+      <ScrollArea className="overflow-scroll">
+        <TabsContent value="Inspector">
+          <InspectorPanel />
+        </TabsContent>
+        <TabsContent value="Settings">
+          <SettingPenal />
+        </TabsContent>
+      </ScrollArea>
+    </Tabs>
   );
 }

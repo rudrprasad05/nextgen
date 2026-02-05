@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useEditor } from "@/context/editor-context";
 import { ELEMENT_LABELS } from "@/lib/page-builder/types";
 import { cn } from "@/lib/utils";
-import { Bold, Italic, Trash2, Underline } from "lucide-react";
+import { Bold, Italic, Trash, Underline } from "lucide-react";
 
 export function InspectorPanel() {
   const { selectedId, getElement, updateElement, deleteElement } = useEditor();
@@ -51,18 +51,22 @@ export function InspectorPanel() {
   return (
     <div className="w-72 bg-background border-l border-border p-4 overflow-y-auto">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-foreground">
-          {ELEMENT_LABELS[element.type]}
-        </h2>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => deleteElement(element.id)}
-          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-          disabled={isRoot}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
+        <div className="space-y-2 w-full grow">
+          <h2 className="text-sm font-semibold text-foreground">
+            {ELEMENT_LABELS[element.type]}
+          </h2>
+          <div className="relative w-full">
+            <p className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+              #
+            </p>
+            <Input
+              id="content"
+              value={element.id || ""}
+              onChange={(e) => updateProp("id", e.target.value)}
+              className="h-8 text-sm w-full"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="space-y-6">
@@ -502,6 +506,20 @@ export function InspectorPanel() {
             Add custom CSS properties (e.g., box-shadow: 0 2px 4px
             rgba(0,0,0,0.1);)
           </p>
+        </section>
+        <section className="space-y-3 pt-4 border rounded-lg border-rose-500 bg-rose-400/20 border-dashed p-4">
+          <h3 className="text-xs font-medium text-rose-500 uppercase tracking-wider">
+            Danger Zone
+          </h3>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => deleteElement(element.id)}
+            disabled={isRoot}
+          >
+            <Trash />
+            Delete Element
+          </Button>
         </section>
       </div>
     </div>
