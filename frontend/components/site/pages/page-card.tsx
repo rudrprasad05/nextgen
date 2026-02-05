@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { PageStatus, type Page } from "@/lib/models";
 import { useSite } from "@/context/SiteContext";
+import Link from "next/link";
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
@@ -70,19 +71,20 @@ export function PageCard({ page }: PageCardProps) {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 shrink-0 opacity-0 group-hover:opacity-100"
-              >
+              <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
                 <MoreHorizontal className="h-4 w-4" />
                 <span className="sr-only">More options</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleEdit}>
-                <Pencil className="mr-2 h-4 w-4" />
-                Edit
+            <DropdownMenuContent align="end" className="border-border">
+              <DropdownMenuItem asChild>
+                <Link
+                  href={`/${params.subdomain}/admin/pages/${page.id}`}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleView}>
                 <Eye className="mr-2 h-4 w-4" />
