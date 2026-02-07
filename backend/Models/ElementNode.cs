@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Backend.Models
@@ -19,6 +20,7 @@ namespace Backend.Models
     public class ElementNode
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ElementType Type { get; set; }
         public Dictionary<string, object> Props { get; set; } = new();
         public ElementStyles Styles { get; set; } = new();
@@ -41,6 +43,9 @@ namespace Backend.Models
         public string? TextAlign { get; set; }
         public string? LineHeight { get; set; }
         public string? MaxWidth { get; set; }
+        public string? MinWidth { get; set; }
+        public string? MinHeight { get; set; }
+        public string? MaxHeight { get; set; }
 
         // Image
         public string? Width { get; set; }

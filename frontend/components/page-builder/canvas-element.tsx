@@ -72,15 +72,15 @@ function ElementContent({ element }: { element: ElementNode }) {
   const styles = buildInlineStyles(element.styles);
 
   switch (element.type) {
-    case "h1":
+    case "H1":
       return <h1 style={styles}>{element.props.content}</h1>;
-    case "h2":
+    case "H2":
       return <h2 style={styles}>{element.props.content}</h2>;
-    case "h3":
+    case "H3":
       return <h3 style={styles}>{element.props.content}</h3>;
-    case "p":
+    case "P":
       return <p style={styles}>{element.props.content}</p>;
-    case "image":
+    case "Image":
       return (
         <img
           src={element.props.src || "/placeholder.svg"}
@@ -96,7 +96,7 @@ function ElementContent({ element }: { element: ElementNode }) {
 function SectionDropZone({
   element,
 }: {
-  element: Extract<ElementNode, { type: "section" | "body" }>;
+  element: Extract<ElementNode, { type: "Section" | "Body" }>;
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id: element.id,
@@ -209,7 +209,7 @@ export function CanvasElement({
 
       {/* Element content */}
       <div className="p-1">
-        {element.type === "section" ? (
+        {element.type === "Section" ? (
           <SectionDropZone element={element} />
         ) : (
           <ElementContent element={element} />

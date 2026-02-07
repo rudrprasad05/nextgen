@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Models.Response;
 using Backend.Models.DTO;
 using Backend.Mappers;
+using System.Text.Json;
 
 namespace Backend.Services
 {
@@ -24,6 +25,51 @@ namespace Backend.Services
             _siteMapper = siteMapper;
             _mediaRepository = mediaRepository;
         }
+
+        public async Task<ApiResponse<string>> SavePageSchemaAsync(
+            string siteSlug,
+            Guid pageUuid,
+            PageSchema schema,
+            string? userId = null
+        )
+        {
+            var userExists = await _db.Users
+                .AsNoTracking()
+                .AnyAsync(x => x.Id == userId);
+
+            if (!userExists)
+            {
+                return ApiResponse<string>.Unauthorised();
+            }
+
+            var site = await _db.Sites
+                .Include(s => s.Pages)
+                .FirstOrDefaultAsync(x =>
+                    x.Slug == siteSlug &&
+                    x.OwnerId == userId &&
+                    !x.IsDeleted
+                );
+
+            if (site == null)
+            {
+                return ApiResponse<string>.NotFound(message: "site not found");
+            }
+
+            var page = site.Pages.FirstOrDefault(p => p.Id == pageUuid);
+
+            if (page == null)
+            {
+                return ApiResponse<string>.NotFound(message: "page not found");
+            }
+
+            page.Schema = schema;
+            page.UpdatedOn = DateTime.UtcNow;
+
+            await _db.SaveChangesAsync();
+
+            return ApiResponse<string>.Ok(data: "saved");
+        }
+
 
         public async Task<ApiResponse<List<OnlySiteDto>>> GetAllSitesForUserAsync(RequestQueryObject queryObject, string? userId = null)
         {

@@ -64,6 +64,30 @@ namespace Backend.Controllers
                 Status = site.Status.ToString()
             }));
         }
+        [HttpPost("save-schema")]
+        public async Task<IActionResult> SavePageSchema(
+            [FromQuery] string slug,
+            [FromQuery] Guid uuid,
+            [FromBody] PageSchema schema
+        )
+        {
+            var userId = CurrentUserId;
+
+            var result = await _siteService.SavePageSchemaAsync(
+                slug,
+                uuid,
+                schema,
+                userId
+            );
+
+            if (!result.Success)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return Ok(result);
+        }
+
 
         [HttpGet("get-json/{subdomain}")]
         public async Task<IActionResult> GetSiteWithPagesJson(string subdomain)

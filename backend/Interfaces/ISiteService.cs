@@ -15,6 +15,8 @@ namespace Backend.Interfaces
         Task<ApiResponse<SiteDto>> GetSiteJsonAsync(string subdomain);
         Task<ApiResponse<List<OnlySiteDto>>> GetAllSitesForUserAsync(RequestQueryObject queryObject, string? userId = null);
         Task<ApiResponse<SiteDto>> GetSiteWithPagesAsync(RequestQueryObject queryObject, string? userId = null);
+        Task<ApiResponse<string>> SavePageSchemaAsync(string siteSlug, Guid pageUuid, PageSchema schema, string? userId = null);
+
     }
 
 }

@@ -1,6 +1,7 @@
 "use server";
 
 import { ApiResponse, QueryObject, Site } from "@/lib/models";
+import { PageSchema } from "@/lib/page-builder/types";
 import { RequestWrapper } from "@/lib/RequestWrapper";
 
 export async function GetAllSites(
@@ -25,5 +26,16 @@ export async function GetOneSiteWithPagesBySlug(
   console.log("GetPagesForOneSite query", slug);
   return RequestWrapper<Site>("GET", `sites/get-site-with-pages`, {
     query: { slug },
+  });
+}
+
+export async function SaveSiteAsync(
+  siteSlug: string,
+  pageId: string,
+  schema: PageSchema,
+): Promise<ApiResponse<Site>> {
+  return RequestWrapper<Site>("POST", `sites/save-schema`, {
+    query: { slug: siteSlug, uuid: pageId },
+    data: schema,
   });
 }

@@ -22,7 +22,7 @@ export default function PElement({ element }: { element: ElementNode }) {
     updateElement(element.id, { styles: { ...element.styles, [key]: value } });
   };
 
-  if (element.type != "p") return;
+  if (element.type != "P") return;
   return (
     <section className="space-y-3">
       <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -47,7 +47,7 @@ export default function PElement({ element }: { element: ElementNode }) {
           <StyleResetButton element={element} styleKey={"lineHeight"} />
         </div>
         <Select
-          value={element.styles.lineHeight || DEFAULT_STYLES.p.lineHeight}
+          value={element.styles.lineHeight || DEFAULT_STYLES.P.lineHeight}
           onValueChange={(value) => updateStyle("lineHeight", value)}
         >
           <SelectTrigger className="h-8 text-sm">

@@ -1,5 +1,9 @@
 "use client";
 
+import { GetOneSiteWithPagesBySlug, SaveSiteAsync } from "@/actions/site";
+import { FIVE_MINUTE_CACHE, Site } from "@/lib/models";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 import {
   createContext,
   useCallback,
@@ -8,6 +12,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { toast } from "sonner";
 import type {
   ElementNode,
   ElementStyles,
@@ -21,7 +26,9 @@ const STORAGE_KEY = "page-builder-schema";
 
 interface EditorContextType {
   schema: PageSchema;
+  savePage: (slug: string, pageId: string) => Promise<void>;
   selectedId: string | null;
+  isSaving: boolean;
   changeViewportMode: (mode: ViewportMode) => void;
   viewportMode: ViewportMode;
   setSelectedId: (id: string | null) => void;
@@ -216,7 +223,7 @@ const DEFAULT_SCHEMA: PageSchema = {
     },
     children: [],
   },
-  meta: {
+  metadata: {
     title: "New Website",
     description: "New website",
   },
@@ -226,28 +233,52 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const [schema, setSchema] = useState<PageSchema>(DEFAULT_SCHEMA);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [viewportMode, setViewportMode] = useState<ViewportMode>("desktop");
+  const { pageId, subdomain } = useParams<{
+    pageId: string;
+    subdomain: string;
+  }>();
+
+  const query = useQuery({
+    queryKey: ["site-admin-page-builder", subdomain],
+    queryFn: () => GetOneSiteWithPagesBySlug(subdomain),
+    staleTime: FIVE_MINUTE_CACHE,
+  });
+
+  const data = query.data?.data as Site;
+
+  console.log("pb", data);
+
+  const currentPage = data.pages.filter((x) => x.id == pageId)[0];
+  console.log("currentPage", currentPage);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        setSchema(JSON.parse(stored));
-      } catch {
-        setSchema(DEFAULT_SCHEMA);
-      }
-    }
-    setIsLoaded(true);
-  }, []);
+    setSchema(currentPage.schema);
+  }, [currentPage]);
 
   useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(schema));
-    }
-  }, [schema, isLoaded]);
+    console.log(schema);
+  }, [schema]);
 
   const changeViewportMode = useCallback((mode: ViewportMode) => {
     setViewportMode(mode);
+  }, []);
+
+  const savePage = useCallback(async (slug: string, pageId: string) => {
+    setIsSaving(true);
+    console.log("d2: ", slug, pageId, schema);
+    const res = await SaveSiteAsync(slug, pageId, schema);
+
+    if (res.success) {
+      toast.success("Page Saved");
+      console.log("ok");
+    } else {
+      toast.error("Page not Saved");
+      console.log(res.message);
+    }
+
+    setIsSaving(false);
   }, []);
 
   const addElement = useCallback(
@@ -259,6 +290,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         styles: { ...DEFAULT_STYLES[type] },
         children: type === "section" ? ([] as ElementNode[]) : undefined,
       };
+
+      console.log("d1: new elemet", newElement);
 
       setSchema((prev) => {
         const targetParent = parentId
@@ -353,15 +386,17 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     setSelectedId(null);
   }, []);
 
-  if (!isLoaded) {
-    return null;
-  }
+  //   if (!isLoaded) {
+  //     return null;
+  //   }
 
   return (
     <EditorContext.Provider
       value={{
         schema,
         selectedId,
+        savePage,
+        isSaving,
         setSelectedId,
         changeViewportMode,
         viewportMode,

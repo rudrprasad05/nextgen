@@ -20,6 +20,7 @@ using Backend.Services;
 using Backend.Config;
 using Backend.Mappers;
 using Backend.Repositories;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +43,7 @@ builder.Services.Configure<HostOptions>(options =>
 builder.Services.AddControllers()
 .AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 });
 
 // // DI Mappers

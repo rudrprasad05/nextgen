@@ -16,14 +16,22 @@ import { ELEMENT_LABELS } from "@/lib/page-builder/types";
 import { cn } from "@/lib/utils";
 import { Bold, Italic, Trash, Underline } from "lucide-react";
 import PElement from "./elements/p-element";
+import StyleResetButton from "./style-reset-button";
 
 export function InspectorPanel() {
-  const { selectedId, getElement, updateElement, deleteElement } = useEditor();
+  const {
+    selectedId,
+    setSelectedId,
+    getElement,
+    updateElement,
+    deleteElement,
+  } = useEditor();
 
   const element = selectedId ? getElement(selectedId) : null;
   const isRoot = selectedId === "body";
 
   if (!element) {
+    setSelectedId("body");
     return (
       <div className="w-72 bg-background border-l border-border p-4">
         <h2 className="text-sm font-semibold text-foreground mb-4">
@@ -72,9 +80,9 @@ export function InspectorPanel() {
 
       <div className="space-y-6">
         {/* Element-specific controls */}
-        {(element.type === "h1" ||
-          element.type === "h2" ||
-          element.type === "h3") && (
+        {(element.type === "H1" ||
+          element.type === "H2" ||
+          element.type === "H3") && (
           <section className="space-y-3">
             <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Content
@@ -83,6 +91,7 @@ export function InspectorPanel() {
               <Label htmlFor="content" className="text-xs">
                 Text
               </Label>
+
               <Input
                 id="content"
                 value={element.props.content || ""}
@@ -91,9 +100,12 @@ export function InspectorPanel() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="fontSize" className="text-xs">
-                Font Size
-              </Label>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="fontSize" className="text-xs">
+                  Font Size
+                </Label>
+                <StyleResetButton element={element} styleKey={"fontSize"} />
+              </div>
               <Select
                 value={element.styles.fontSize || "2rem"}
                 onValueChange={(value) => updateStyle("fontSize", value)}
@@ -111,7 +123,10 @@ export function InspectorPanel() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label className="text-xs">Text Align</Label>
+              <div className="flex items-center gap-2">
+                <Label className="text-xs">Text Align</Label>
+                <StyleResetButton element={element} styleKey={"textAlign"} />
+              </div>
               <div className="flex gap-1">
                 {(["left", "center", "right"] as const).map((align) => (
                   <Button
@@ -121,7 +136,7 @@ export function InspectorPanel() {
                     onClick={() => updateStyle("textAlign", align)}
                     className={cn(
                       "flex-1 h-8 text-xs capitalize",
-                      element.styles.textAlign === align && "bg-accent",
+                      element.styles.textAlign === align && "border-primary",
                     )}
                   >
                     {align}
@@ -134,7 +149,7 @@ export function InspectorPanel() {
 
         <PElement element={element} />
 
-        {element.type === "image" && (
+        {element.type === "Image" && (
           <section className="space-y-3">
             <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Image
@@ -228,7 +243,7 @@ export function InspectorPanel() {
           </section>
         )}
 
-        {element.type === "section" && (
+        {element.type === "Section" && (
           <section className="space-y-3">
             <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Layout

@@ -1,6 +1,7 @@
 import {
   ElementNode,
   ElementStyles,
+  ElementType,
   PageSchema,
 } from "@/lib/page-builder/types";
 
@@ -18,16 +19,16 @@ export default function Page() {
 
 export function renderNode(node: ElementNode): string {
   switch (node.type) {
-    case "h1":
+    case ElementType.H1:
       return `<h1 style={${generateReactStyleObject(node.styles)}}>${node.props.content}</h1>`;
-    case "h2":
+    case ElementType.H2:
       return `<h2 style={${generateReactStyleObject(node.styles)}}>${node.props.content}</h2>`;
-    case "h3":
+    case ElementType.H3:
       return `<h3 style={${generateReactStyleObject(node.styles)}}>${node.props.content}</h3>`;
-    case "p":
+    case ElementType.P:
       return `<p style={${generateReactStyleObject(node.styles)}}>${node.props.content}</p>`;
 
-    case "section":
+    case ElementType.Section:
       return `
         <div style={${generateReactStyleObject(node.styles)}}>
         ${node.children?.map(renderNode).join("\n") ?? ""}

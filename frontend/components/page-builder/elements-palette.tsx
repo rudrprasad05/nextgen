@@ -2,8 +2,7 @@
 
 import React from "react";
 
-import type { ElementType } from "@/lib/page-builder/types";
-import { ELEMENT_LABELS } from "@/lib/page-builder/types";
+import { ELEMENT_LABELS, ElementType } from "@/lib/page-builder/types";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -15,26 +14,19 @@ import {
   Type,
 } from "lucide-react";
 
-const ELEMENT_ICONS: Record<ElementType, React.ReactNode> = {
-  h1: <Heading1 className="h-5 w-5" />,
-  h2: <Heading2 className="h-5 w-5" />,
-  h3: <Heading3 className="h-5 w-5" />,
-  p: <Type className="h-5 w-5" />,
-  image: <ImageIcon className="h-5 w-5" />,
-  section: <LayoutGrid className="h-5 w-5" />,
+type ElementTypeWithoutBody = Exclude<ElementType, ElementType.Body>;
+
+const ELEMENT_ICONS: Record<ElementTypeWithoutBody, React.ReactNode> = {
+  H1: <Heading1 className="h-5 w-5" />,
+  H2: <Heading2 className="h-5 w-5" />,
+  H3: <Heading3 className="h-5 w-5" />,
+  P: <Type className="h-5 w-5" />,
+  Image: <ImageIcon className="h-5 w-5" />,
+  Section: <LayoutGrid className="h-5 w-5" />,
 };
 
-const ELEMENT_TYPES: ElementType[] = [
-  "h1",
-  "h2",
-  "h3",
-  "p",
-  "image",
-  "section",
-];
-
 interface DraggableElementProps {
-  type: ElementType;
+  type: ElementTypeWithoutBody;
 }
 
 function DraggableElement({ type }: DraggableElementProps) {
@@ -70,9 +62,11 @@ export function ElementsPalette() {
     <div className="w-56 bg-background border-r border-border p-4 flex flex-col gap-2 overflow-y-auto">
       <h2 className="text-sm font-semibold text-foreground mb-2">Elements</h2>
       <div className="flex flex-col gap-2">
-        {ELEMENT_TYPES.map((type) => (
-          <DraggableElement key={type} type={type} />
-        ))}
+        {Object.values(ElementType)
+          .filter((type) => type !== ElementType.Body)
+          .map((type) => (
+            <DraggableElement key={type} type={type} />
+          ))}
       </div>
     </div>
   );

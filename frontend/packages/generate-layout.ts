@@ -8,8 +8,8 @@ export function generateLayout(schema: PageSchema): string {
     import React from "react";
 
     export const metadata: Metadata = {
-        title: "${schema.meta.title}",
-        description: "${schema.meta.description}",
+        title: "${schema.metadata?.title || ""}",
+        description: "${schema.metadata?.description || ""}",
     };
 
     export default function RootLayout({
