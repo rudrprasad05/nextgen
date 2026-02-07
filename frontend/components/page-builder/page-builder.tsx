@@ -25,8 +25,8 @@ import { useState } from "react";
 import { FullPageLoader } from "../global/LoadingContainer";
 import { ScrollArea } from "../ui/scroll-area";
 import { EditorCanvas } from "./editor-canvas";
-import { ElementsPalette } from "./elements-palette";
 import { InspectorPanel } from "./inspector-panel";
+import PaletteTab from "./palette-tab";
 import SettingPenal from "./settings-panel";
 import { TopBar } from "./top-bar";
 
@@ -123,7 +123,8 @@ function EditorContent() {
       <div className="flex flex-col h-screen">
         <TopBar />
         <div className="flex flex-1 overflow-hidden">
-          <ElementsPalette />
+          {/* <ElementsPalette /> */}
+          <PaletteTab />
           <EditorCanvas />
           <ConfigPanel />
         </div>

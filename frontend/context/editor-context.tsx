@@ -26,6 +26,7 @@ const STORAGE_KEY = "page-builder-schema";
 
 interface EditorContextType {
   schema: PageSchema;
+  saveSchemaHelper: (importSchema: PageSchema) => void;
   savePage: (slug: string, pageId: string) => Promise<void>;
   selectedId: string | null;
   isSaving: boolean;
@@ -189,7 +190,7 @@ function insertElementAtIndex(
 }
 
 function canDeleteElement(element: ElementNode) {
-  return element.type !== "body";
+  return element.type !== "Body";
 }
 
 function addElementToParent(
@@ -214,7 +215,7 @@ function addElementToParent(
 const DEFAULT_SCHEMA: PageSchema = {
   root: {
     id: "body",
-    type: "body",
+    type: "Body",
     props: {},
     styles: {
       background: "#ffffff",
@@ -281,6 +282,10 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     setIsSaving(false);
   }, []);
 
+  const saveSchemaHelper = (importSchema: PageSchema) => {
+    setSchema(importSchema);
+  };
+
   const addElement = useCallback(
     (type: ElementType, parentId?: string | null) => {
       const newElement: ElementNode = {
@@ -288,7 +293,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         type,
         props: { ...DEFAULT_PROPS[type] },
         styles: { ...DEFAULT_STYLES[type] },
-        children: type === "section" ? ([] as ElementNode[]) : undefined,
+        children: type === "Section" ? ([] as ElementNode[]) : undefined,
       };
 
       console.log("d1: new elemet", newElement);
@@ -394,6 +399,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     <EditorContext.Provider
       value={{
         schema,
+        saveSchemaHelper,
         selectedId,
         savePage,
         isSaving,

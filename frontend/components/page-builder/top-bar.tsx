@@ -6,9 +6,11 @@ import { downloadFile, exportNextJS } from "@/lib/page-builder/export";
 import { ArrowLeft, File, RotateCcw } from "lucide-react";
 import { useParams } from "next/navigation";
 import { ExportButton } from "./export-button";
+import { ImportSchemaDialog } from "./import-schema";
 
 export function TopBar() {
-  const { schema, resetSchema, savePage, isSaving } = useEditor();
+  const { schema, saveSchemaHelper, resetSchema, savePage, isSaving } =
+    useEditor();
   const { pageId, subdomain } = useParams<{
     pageId: string;
     subdomain: string;
@@ -58,6 +60,11 @@ export function TopBar() {
           Clear
         </Button>
         <ExportButton schema={schema} />
+        <ImportSchemaDialog
+          onImport={(schema) => {
+            saveSchemaHelper(schema);
+          }}
+        />
         <Button
           disabled={isSaving}
           variant="default"
