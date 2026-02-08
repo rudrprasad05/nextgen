@@ -46,7 +46,7 @@ export default function LoginPage() {
   async function onSubmit(values: SignInFormType) {
     setIsLoading(true);
     try {
-      await login(values.email, values.password, redirect as string);
+      await login(values.email, values.password);
     } catch (error) {
       toast.error("Failed login");
     }

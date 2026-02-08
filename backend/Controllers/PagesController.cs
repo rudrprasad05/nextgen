@@ -9,6 +9,7 @@ using Backend.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Backend.Models;
 using Microsoft.AspNetCore.Authorization;
+using Backend.Models.DTO;
 
 namespace Backend.Controllers
 {
@@ -37,6 +38,36 @@ namespace Backend.Controllers
                 return StatusCode(model.StatusCode, model);
             }
             return Ok(model);
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreatePage(
+            [FromQuery] RequestQueryObject query,
+            [FromBody] CreatePageRequestDto data
+        )
+        {
+            // Get user ID from claims/auth context
+            var userId = GetCurrentUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new { message = "User not authenticated" });
+            }
+
+            // Merge query params into DTO if needed
+            if (!string.IsNullOrWhiteSpace(query.Slug))
+            {
+                data.SiteSlug = query.Slug;
+            }
+
+            var result = await _pageRepository.CreatePageAsync(data, userId);
+
+            if (!result.Success)
+            {
+                return StatusCode(result.StatusCode, result);
+            }
+
+            return StatusCode(result.StatusCode, result);
         }
 
         [HttpGet("get-all")]

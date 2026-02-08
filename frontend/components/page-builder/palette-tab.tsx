@@ -42,7 +42,7 @@ export default function PaletteTab() {
 
   return (
     <Tabs
-      defaultValue="Select"
+      defaultValue="Elements"
       className="flex flex-row w-72 border-r border-border sticky top-0 text-xs"
     >
       <TabsPrimitive.List className="w-12 border-r border-border grid grid-cols-1 gap-2 grid-rows-8 pt-2 sticky top-0 h-full">
@@ -63,7 +63,6 @@ export default function PaletteTab() {
         ))}
         <div className="row-start-8">c</div>
       </TabsPrimitive.List>
-
       <ScrollArea className="overflow-scroll">
         <TabsContent value="Elements">
           <ElementsPalette />

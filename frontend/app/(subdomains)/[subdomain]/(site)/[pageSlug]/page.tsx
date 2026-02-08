@@ -1,14 +1,19 @@
 "use client";
 
 import { GetSiteJson } from "@/actions/site";
+import SiteRenderer from "@/components/site/renderer/site-renderer";
 import { useSite } from "@/context/SiteContext";
 import { FIVE_MINUTE_CACHE, Site } from "@/lib/models";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import SiteRenderer from "./renderer/site-renderer";
+import { useParams } from "next/navigation";
 
-export default function SiteCanvas({ subdomain }: { subdomain: string }) {
+export default function SitePage() {
   const { site, setInitialSite } = useSite();
+  const { pageSlug, subdomain } = useParams<{
+    pageSlug: string;
+    subdomain: string;
+  }>();
 
   const query = useQuery({
     queryKey: ["site", subdomain],
@@ -25,9 +30,9 @@ export default function SiteCanvas({ subdomain }: { subdomain: string }) {
   const data = query.data?.data as Site;
   const meta = query.data?.meta;
 
-  setInitialSite(data);
+  let mainPage = data.pages.filter((x) => x.slug.toLowerCase() == pageSlug)[0];
 
-  let mainPage = data.pages.filter((x) => x.slug.toLowerCase() == "home")[0];
+  console.log(data, mainPage);
 
   return <SiteRenderer schema={mainPage.schema} />;
 }

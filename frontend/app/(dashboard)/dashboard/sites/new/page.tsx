@@ -9,20 +9,12 @@ import { SeoSettings } from "@/components/site/form-sections/seo-settings";
 import { TemplatePicker } from "@/components/site/form-sections/template-picker";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import { generateSlug } from "@/lib/utils";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .trim();
-}
 
 export interface CreateSiteRequestDto {
   name: string;

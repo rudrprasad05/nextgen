@@ -12,6 +12,8 @@ namespace Backend.Interfaces
     public interface IPagesRepository
     {
         Task<Site> CreateSiteAsync(CreateSiteRequestDto dto, string ownerId);
+        Task<ApiResponse<PageDto>> CreatePageAsync(CreatePageRequestDto dto, string userId);
+
         Task<ApiResponse<SiteDto>> GetSiteJsonAsync(string subdomain);
         Task<ApiResponse<List<PageDto>>> GetAllPagesForSiteAsync(RequestQueryObject queryObject, string? userId = null);
     }

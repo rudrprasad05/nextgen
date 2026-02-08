@@ -28,9 +28,83 @@ namespace Backend.Repositories
             throw new NotImplementedException();
         }
 
+        public async Task<ApiResponse<PageDto>> CreatePageAsync(
+            CreatePageRequestDto dto,
+            string userId
+        )
+        {
+            // Validate input
+            if (string.IsNullOrWhiteSpace(dto.SiteSlug))
+            {
+                return ApiResponse<PageDto>.Fail(message: "Site slug is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Title))
+            {
+                return ApiResponse<PageDto>.Fail(message: "Page title is required");
+            }
+
+            // Verify site exists and user has access
+            var site = await _context.Sites
+                .AsNoTracking()
+                .Where(s => s.Slug == dto.SiteSlug && s.OwnerId == userId && !s.IsDeleted)
+                .FirstOrDefaultAsync();
+            if (site == null)
+            {
+                return ApiResponse<PageDto>.NotFound(message: "Site not found or inaccessible");
+            }
+
+            // Create the page model
+            var page = new Page
+            {
+                Id = Guid.NewGuid(),
+                SiteId = site.Id,
+                Title = dto.Title,
+                Slug = dto.Slug ?? GenerateSlug(dto.Title),
+                Status = PageStatus.Draft,
+                CreatedOn = DateTime.UtcNow,
+                UpdatedOn = DateTime.UtcNow,
+                IsDeleted = false,
+                Schema = new PageSchema
+                {
+                    Root = new ElementNode
+                    {
+                        Id = "body",
+                        Type = ElementType.Body,
+                        Props = new Dictionary<string, object>(),
+                        Children = new List<ElementNode>()
+                    },
+                    MetaData = new MetaDataModel
+                    {
+                        Title = dto.Title,
+                        Description = dto.Title
+                    }
+                }
+            };
+
+            // Add to database
+            await _context.Pages.AddAsync(page);
+            await _context.SaveChangesAsync();
+
+            // Map to DTO
+            var pageDto = _pageMapper.FromModelToDtoAsync(page);
+
+            return ApiResponse<PageDto>.Ok(pageDto, message: "Page created successfully");
+        }
+
+        private string GenerateSlug(string title)
+        {
+            // Simple slug generation - you may want to enhance this
+            return title
+                .ToLowerInvariant()
+                .Replace(" ", "-")
+                .Replace("&", "and")
+                .Trim();
+        }
+
         public async Task<ApiResponse<List<PageDto>>> GetAllPagesForSiteAsync(
-    RequestQueryObject queryObject,
-    string? userId = null)
+            RequestQueryObject queryObject,
+            string? userId = null)
         {
             if (string.IsNullOrWhiteSpace(queryObject.Slug))
             {

@@ -241,6 +241,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     subdomain: string;
   }>();
 
+  console.log("subdomain", subdomain);
+
   const query = useQuery({
     queryKey: ["site-admin-page-builder", subdomain],
     queryFn: () => GetOneSiteWithPagesBySlug(subdomain),
@@ -259,7 +261,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   }, [currentPage]);
 
   useEffect(() => {
-    console.log(schema);
+    console.log("updatyed schema", schema);
   }, [schema]);
 
   const changeViewportMode = useCallback((mode: ViewportMode) => {

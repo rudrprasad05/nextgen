@@ -14,7 +14,7 @@ import {
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { useState } from "react";
-import { NewPageButton } from "./new-page-button";
+import NewPageButton from "./new-page-button";
 import { PageCard } from "./page-card";
 import { PageCardSkeleton } from "./page-card-skeleton";
 
