@@ -183,7 +183,7 @@ function ConfigPanel() {
 
   // return <InspectorPanel/>
   return (
-    <Tabs defaultValue="Select" className="relative flex flex-col w-72">
+    <Tabs defaultValue="Inspector" className="relative flex flex-col w-72">
       <TabsPrimitive.List className="w-full border-solid border-b border-border flex flex-row pt-2 sticky top-0">
         <TabsPrimitive.Trigger
           onClick={() => setState("Inspector")}

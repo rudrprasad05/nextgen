@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useEditor } from "@/context/editor-context";
-import { ELEMENT_LABELS } from "@/lib/page-builder/types";
+import { ELEMENT_LABELS, ElementType } from "@/lib/page-builder/types";
 import { cn } from "@/lib/utils";
 import { Bold, Italic, Trash, Underline } from "lucide-react";
 import PElement from "./elements/p-element";
@@ -466,20 +466,22 @@ export function InspectorPanel() {
             rgba(0,0,0,0.1);)
           </p>
         </section>
-        <section className="space-y-3 pt-4 border rounded-lg border-rose-500 bg-rose-400/20 border-dashed p-4">
-          <h3 className="text-xs font-medium text-rose-500 uppercase tracking-wider">
-            Danger Zone
-          </h3>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => deleteElement(element.id)}
-            disabled={isRoot}
-          >
-            <Trash />
-            Delete Element
-          </Button>
-        </section>
+        {element.type != ElementType.Body && (
+          <section className="space-y-3 pt-4 border rounded-lg border-rose-500 bg-rose-400/20 border-dashed p-4">
+            <h3 className="text-xs font-medium text-rose-500 uppercase tracking-wider">
+              Danger Zone
+            </h3>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => deleteElement(element.id)}
+              disabled={isRoot}
+            >
+              <Trash />
+              Delete Element
+            </Button>
+          </section>
+        )}
       </div>
     </div>
   );
