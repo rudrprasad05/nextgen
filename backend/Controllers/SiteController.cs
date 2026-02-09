@@ -38,7 +38,6 @@ namespace Backend.Controllers
             [FromForm] string defaultSeoTitle,
             [FromForm] string defaultSeoDescription,
             [FromForm] string ownerId,
-            [FromForm] SiteStatus status,
             IFormFile? favicon
         )
         {
@@ -53,7 +52,6 @@ namespace Backend.Controllers
                 DefaultSeoDescription = defaultSeoDescription,
                 OwnerId = userId ?? ownerId,
                 Favicon = favicon,
-                Status = status
             };
             var site = await _siteService.CreateSiteAsync(dto, userId ?? dto.OwnerId);
             return Ok(ApiResponse<SiteResponseDto>.Ok(new SiteResponseDto
@@ -61,7 +59,7 @@ namespace Backend.Controllers
                 Id = site.Id,
                 Name = site.Name,
                 Slug = site.Slug,
-                Status = site.Status.ToString()
+                Status = "ok"
             }));
         }
         [HttpPost("save-schema")]

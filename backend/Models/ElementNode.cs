@@ -34,7 +34,8 @@ namespace Backend.Models
         public string? Color { get; set; }
         public string? Background { get; set; }
         public string? CustomCss { get; set; }
-
+        public string? BoxSizing { get; set; }
+        public string? FontFamily { get; set; }
         // Text
         public string? FontWeight { get; set; }
         public string? FontStyle { get; set; }

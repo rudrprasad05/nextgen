@@ -15,7 +15,10 @@ public class Media : BaseModel
     public long SizeInBytes { get; set; }
     public bool ShowInGallery { get; set; } = true;
 
-    public string OwnerId { get; set; } = null!;
-    public AppUser Owner { get; set; } = null!;
+    public string UploadedByUserId { get; set; } = null!;
+    public AppUser UploadedByUser { get; set; } = null!;
+
+    public Organization Organization { get; set; } = null!;
+    public Guid OrganizationId { get; set; }
 }
 

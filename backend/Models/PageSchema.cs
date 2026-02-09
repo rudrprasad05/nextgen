@@ -8,6 +8,5 @@ namespace Backend.Models
     public class PageSchema
     {
         public ElementNode Root { get; set; } = new();
-        public MetaDataModel MetaData { get; set; } = new();
     }
 }

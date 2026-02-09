@@ -25,9 +25,7 @@ namespace Backend.Mappers
                 CreatedOn = request.CreatedOn,
                 UpdatedOn = request.UpdatedOn,
                 IsDeleted = request.IsDeleted,
-                Title = request.Title,
                 Slug = request.Slug,
-                Schema = request.Schema,
                 Status = request.Status,
             };
 

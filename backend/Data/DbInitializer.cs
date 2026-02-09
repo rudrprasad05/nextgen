@@ -19,37 +19,76 @@ namespace Backend.Data
     public class DbInitializer : IDbInitializer
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly IMediaRepository _mediaRepository;
 
         public DbInitializer(
-            UserManager<AppUser> userManager
+            UserManager<AppUser> userManager,
+            IMediaRepository mediaRepository
         )
         {
             _userManager = userManager;
+            _mediaRepository = mediaRepository;
         }
 
         public async Task SeedAsync()
         {
-            await SeedSuperAdmin(_userManager);
+            await SeedSuperAdmin(_userManager, _mediaRepository);
 
         }
 
-        private static async Task SeedSuperAdmin(UserManager<AppUser> userManager)
+        private static async Task SeedSuperAdmin(UserManager<AppUser> userManager, IMediaRepository mediaRepository)
         {
             if (!await userManager.Users.AnyAsync())
             {
+                // 1️⃣ Create the user
                 var admin = new AppUser
                 {
                     UserName = "admin",
                     Email = "rudrprasad@yahoo.com",
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    IsPlatformAdmin = true
                 };
+
                 var result = await userManager.CreateAsync(admin, "=TV6Cx>PKqjV");
-                if (result.Succeeded)
+                if (!result.Succeeded) return;
+
+                // 2️⃣ Add role
+                await userManager.AddToRoleAsync(admin, "admin");
+
+                // 3️⃣ Attach profile image
+                var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "Images", "admin_profile_image.jpg");
+                if (File.Exists(imagePath))
                 {
-                    await userManager.AddToRoleAsync(admin, "admin");
+                    // Simulate IFormFile from local file
+                    var fileStream = File.OpenRead(imagePath);
+                    var fileName = Path.GetFileName(imagePath);
+                    var formFile = new FormFile(fileStream, 0, fileStream.Length, "file", fileName)
+                    {
+                        Headers = new HeaderDictionary(),
+                        ContentType = "image/jpeg"
+                    };
+
+                    var media = new Media
+                    {
+                        AltText = "Admin Profile Image",
+                        ContentType = "image/jpeg",
+                        FileName = fileName,
+                        SizeInBytes = fileStream.Length,
+                        ShowInGallery = false,
+                        UploadedByUserId = admin.Id
+                    };
+
+                    var mediaResult = await mediaRepository.CreateAsync(media, formFile);
+                    if (mediaResult.Success)
+                    {
+                        // Link media to user
+                        admin.ProfilePictureId = media.Id;
+                        await userManager.UpdateAsync(admin);
+                    }
                 }
             }
         }
+
 
         private static string GetContentType(string fileName)
         {

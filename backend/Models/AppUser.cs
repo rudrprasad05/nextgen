@@ -10,18 +10,18 @@ namespace Backend.Models;
 
 public class AppUser : IdentityUser
 {
-    public Media? ProfilePicture { get; set; } = null;
-    public int? ProfilePictureId { get; set; } = null;
+    // basic stuff
     [Required] public DateTime CreatedOn { get; set; } = DateTime.Now;
     [Required] public DateTime UpdatedOn { get; set; } = DateTime.Now;
     [Required] public bool IsDeleted { get; set; } = false;
 
+    // additional profile info
+    public Media? ProfilePicture { get; set; } = null;
+    public Guid? ProfilePictureId { get; set; } = null;
     public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     public ICollection<Media> Media { get; set; } = new List<Media>();
 
-    public ICollection<UserCapability> Capabilities { get; set; } = new List<UserCapability>();
-    public ICollection<AccessContext> AccessContexts { get; set; } = new List<AccessContext>();
+    // admin flag
+    public bool IsPlatformAdmin { get; set; } = false;
 
-    public ICollection<SiteUser> Sites { get; set; } = new List<SiteUser>();
-    public ICollection<Site> OwnedSites { get; set; } = new List<Site>();
 }

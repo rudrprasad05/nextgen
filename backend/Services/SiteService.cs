@@ -62,7 +62,16 @@ namespace Backend.Services
                 return ApiResponse<string>.NotFound(message: "page not found");
             }
 
-            page.Schema = schema;
+            var version = new PageSchemaVersion
+            {
+                PageId = page.Id,
+                Version = (await _db.PageSchemaVersions.Where(v => v.PageId == page.Id).MaxAsync(v => (int?)v.Version) ?? 0) + 1,
+                PageSchema = schema,
+                IsPublished = false,
+                CreatedByUserId = userId
+            };
+
+            page.CurrentSchemaVersion = version;
             page.UpdatedOn = DateTime.UtcNow;
 
             await _db.SaveChangesAsync();
@@ -104,7 +113,7 @@ namespace Backend.Services
                     ContentType = dto.Favicon.ContentType,
                     SizeInBytes = dto.Favicon.Length,
                     ShowInGallery = true,
-                    OwnerId = ownerId,
+                    UploadedByUserId = ownerId,
                 };
                 faviconMedia = (await _mediaRepository.CreateAsync(tempMedia, dto.Favicon)).Data;
             }
@@ -115,7 +124,7 @@ namespace Backend.Services
                 Name = dto.Name,
                 Slug = dto.Slug,
                 OwnerId = ownerId,
-                Status = dto.Status,
+                IsPublished = dto.IsPublished,
                 CreatedOn = DateTime.UtcNow,
                 UpdatedOn = DateTime.UtcNow,
                 Pages = CreateDefaultPages(dto.Template),
@@ -162,36 +171,63 @@ namespace Backend.Services
         {
             if (template == "blank")
             {
+                var pageGuid = Guid.NewGuid();
+                var rootElement = new ElementNode
+                {
+                    Id = "body",
+                    Type = ElementType.Body,
+                    Props = new Dictionary<string, object>(),
+                    Children = new List<ElementNode>(),
+                    Styles = new ElementStyles
+                    {
+                        // Layout
+                        Padding = "10px",
+                        Margin = "0",
+                        MinHeight = "100vh",
+                        BoxSizing = "border-box",
+
+                        // Colors
+                        Background = "#ffffff",
+                        Color = "#000000",
+
+                        // Typography
+                        FontFamily = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                        FontSize = "16px",
+                        LineHeight = "1.6",
+                        FontWeight = "400"
+                    }
+                };
+                var pageSchemaVersion = new PageSchemaVersion
+                {
+                    Version = 1,
+                    CreatedByUserId = null,
+                    IsPublished = false,
+                    PageId = pageGuid,
+                    PageSchema = new PageSchema
+                    {
+                        Root = rootElement
+                    }
+                };
+                var metaData = new MetaDataModel
+                {
+                    Title = "Home",
+                    Description = "New website"
+                };
                 return new List<Page>
                 {
                     new Page
                     {
-                        Id = Guid.NewGuid(),
-                        Title = "Home",
+                        Id = pageGuid,
+                        MetaData = metaData,
                         Slug = "home",
                         Status = PageStatus.Draft,
                         CreatedOn = DateTime.UtcNow,
                         UpdatedOn = DateTime.UtcNow,
-                        Schema = new PageSchema
-                        {
-                            Root = new ElementNode
-                            {
-                                Id = "body",
-                                Type = ElementType.Body,
-                                Props = new Dictionary<string, object>(),
-                                Children = new List<ElementNode>()
-                            },
-                            MetaData = new MetaDataModel
-                            {
-                                Title = "New Website",
-                                Description = "New website"
-                            }
-                        }
+                        CurrentSchemaVersion = pageSchemaVersion
                     }
                 };
             }
 
-            // extend later
             return new List<Page>();
         }
 
