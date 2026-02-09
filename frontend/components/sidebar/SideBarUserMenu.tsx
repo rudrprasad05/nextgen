@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/context/UserContext";
+import { useAuth } from "@/context/AuthContext";
 import { ChevronUp, Loader2, LogOut, User } from "lucide-react";
 import Link from "next/link";
 
@@ -56,7 +56,7 @@ export function SideBarUserMenu() {
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link prefetch href={"profile"}>
+              <Link prefetch href={"/dashboard/profile"}>
                 <User className="mr-2 h-4 w-4" />
                 Profile
               </Link>

@@ -12,9 +12,12 @@
 
 # testing
 /coverage
+/generated
+/.generated
+
 
 # next.js
-/.next/
+**/.next/
 /out/
 
 # production
@@ -39,3 +42,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+certificates

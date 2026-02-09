@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace backend.Models.DTO
+namespace Backend.Models.DTO
 {
     public class SiteAccessDto
     {

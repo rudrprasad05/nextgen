@@ -1,65 +1,119 @@
-import { axiosGlobal } from "@/lib/axios";
+// lib/request-wrapper.ts
 import { AxiosError, AxiosRequestConfig, Method } from "axios";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { redirect } from "next/navigation";
 import { ApiResponse, QueryObject } from "./models";
 import { buildMediaQueryParams } from "./params";
+import { createServerAxios } from "./axios-server";
 
 export async function RequestWrapper<T>(
   method: Method,
   url: string,
   options: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data?: any;
     config?: AxiosRequestConfig;
     query?: QueryObject;
+    skipAuthRedirect?: boolean;
   },
 ): Promise<ApiResponse<T>> {
-  const { data, config, query } = options;
-  //   const token = await GetToken();
+  const { data, config, query, skipAuthRedirect } = options;
   const params = buildMediaQueryParams(query);
+  url = params ? `${url}?${params}` : url;
 
-  url = `${url}?${params}`;
+  console.dir(method);
+  console.dir(url);
+  console.dir(query);
+
+  const isAuthRequest = url.includes("auth/") || url.startsWith("auth");
 
   try {
-    const res = await axiosGlobal({
+    // Create server axios instance with cookies
+    const axiosInstance = await createServerAxios();
+
+    const res = await axiosInstance({
       method,
       url,
       data,
       headers: {
-        // Authorization: `Bearer ${token}`,
         ...(config?.headers || {}),
       },
       ...config,
     });
 
-    if (res.status === 401) {
-      console.log("401", res);
-      redirect("/error/unauthorised");
-    }
-
     return res.data;
   } catch (error: unknown) {
+    console.dir(error);
+
+    // 🚨 Required: rethrow Next.js redirects
     if (isRedirectError(error)) {
-      console.log("401", error);
-      console.dir(error);
       throw error;
     }
 
-    if (error instanceof Error) {
-      const axiosError = error as AxiosError;
-
-      if (axiosError.response?.status === 401) {
+    if (error instanceof AxiosError) {
+      const status = error.response?.status;
+      console.dir(error);
+      // =====================
+      // AUTH
+      // =====================
+      if (status === 401) {
+        if (isAuthRequest || skipAuthRedirect) {
+          return {
+            data: null,
+            success: false,
+            statusCode: 401,
+            message: error.response?.data?.message || "Unauthorized",
+          } as ApiResponse<T>;
+        }
         redirect("/error/unauthorised");
       }
 
-      console.error(axiosError);
+      // =====================
+      // NOT FOUND
+      // =====================
+      if (status === 404) {
+        return {
+          data: null,
+          success: false,
+          statusCode: 404,
+          message: "Request API not found (RequestWrapper)",
+        } as ApiResponse<T>;
+      }
+
+      // =====================
+      // SERVER ERRORS
+      // =====================
+      if (status && status >= 500) {
+        return {
+          data: null,
+          success: false,
+          statusCode: 500,
+          message: "Request failed (RequestWrapper)",
+        } as ApiResponse<T>;
+      }
+
+      // =====================
+      // NO RESPONSE (server down, CORS, timeout)
+      // =====================
+      if (!error.response && error.request) {
+        return {
+          data: null,
+          success: false,
+          statusCode: 500,
+          message: "Server down, unreachable or CORS (RequestWrapper)",
+        } as ApiResponse<T>;
+      }
+
+      console.error("Axios error:", error);
     }
 
+    // =====================
+    // FALLBACK RESPONSE
+    // =====================
     return {
       data: null,
       success: false,
       statusCode: 400,
+      message: "Request failed",
     } as ApiResponse<T>;
   }
 }

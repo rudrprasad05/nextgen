@@ -21,7 +21,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
-import { useAuth } from "@/context/UserContext";
+import { useAuth } from "@/context/AuthContext";
 
 import { Notification, NotificationTypes } from "@/lib/models";
 import { useParams } from "next/navigation";

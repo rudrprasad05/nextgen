@@ -1,3 +1,5 @@
+import { PageSchema } from "../page-builder/types";
+
 export interface User {
   id: string;
   username: string;
@@ -39,6 +41,29 @@ export enum UserRoles {
   USER = "USER",
 }
 
+export interface Site extends BaseModel {
+  name: string;
+  slug: string;
+  updatedAt: string;
+  status: "draft" | "published";
+  screenshot?: Media | null;
+  pages: Page[];
+}
+
+export enum PageStatus {
+  Draft = "Draft",
+  Published = "Published",
+}
+
+export interface Page extends BaseModel {
+  siteId: string; // Foreign key
+  slug: string;
+  title: string;
+  status: PageStatus;
+  schema: PageSchema; // Stored as JSON
+  site: Site; // Navigation property
+}
+
 export interface Media extends BaseModel {
   url: string;
   objectKey: string;
@@ -50,12 +75,20 @@ export interface Media extends BaseModel {
 }
 
 export interface BaseModel {
-  id: number;
+  id: string;
   uuid: string;
   createdOn: string;
   updatedOn: string;
   isDeleted: boolean;
   isActive: boolean;
+}
+
+export interface DashboardData {
+  totalSites: number;
+  totalMedia: number;
+  activeUsers: number;
+  unreadNotifications: number;
+  notifications?: Notification[];
 }
 
 export const FIVE_MINUTE_CACHE = 1000 * 60 * 5;
@@ -84,6 +117,7 @@ export interface QueryObject {
   isAvailable?: boolean;
   search?: string;
   userId?: string;
+  slug?: string;
 }
 
 export enum ESortBy {

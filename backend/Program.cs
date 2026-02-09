@@ -16,15 +16,11 @@ using Microsoft.Extensions.Options;
 using Azure.Storage;
 using Amazon.S3;
 using Amazon;
-
-using System.ComponentModel;
 using Backend.Services;
 using Backend.Config;
-using backend.Interfaces;
-using backend.Mappers;
-using backend.Repositories;
-using backend.Services;
-
+using Backend.Mappers;
+using Backend.Repositories;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,7 +43,7 @@ builder.Services.Configure<HostOptions>(options =>
 builder.Services.AddControllers()
 .AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 });
 
 // // DI Mappers
@@ -60,17 +56,22 @@ builder.Services.AddControllers()
 // builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 // builder.Services.AddScoped<IProjectTypeRepository, ProjectTypeRepository>();
 // builder.Services.AddScoped<ISiteRepository, SiteRepository>();
-// builder.Services.AddScoped<IContactMessageRepository, ContactMessageRepository>();
 
+builder.Services.AddScoped<ISiteService, SiteService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IBackgroundTaskQueue, BackgroundTaskQueue>();
 builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserMapper, UserMapper>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IMediaRepository, MediaRepository>();
+builder.Services.AddScoped<IPagesRepository, PagesRepository>();
 
+builder.Services.AddScoped<IUserMapper, UserMapper>();
+builder.Services.AddScoped<ISiteMapper, SiteMapper>();
+builder.Services.AddScoped<IMediaMapper, MediaMapper>();
+builder.Services.AddScoped<IPageMapper, PageMapper>();
 
 // builder.Services.AddScoped<IUserMapper, UserMapper>();
 // builder.Services.AddScoped<IProjectMapper, ProjectMapper>();

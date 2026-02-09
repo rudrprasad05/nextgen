@@ -43,7 +43,7 @@ export default function UsersPage() {
         title="Users"
         actions={
           <Button asChild>
-            <Link href="/users/new">
+            <Link href="/dashboard/users/new">
               <Plus className="mr-2 h-4 w-4" />
               Create User
             </Link>

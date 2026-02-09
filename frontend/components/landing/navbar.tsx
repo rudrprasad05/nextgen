@@ -1,28 +1,33 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Menu, X } from "lucide-react"
-import { useState } from "react"
+import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 
 const navLinks = [
   { label: "Features", href: "#features" },
   { label: "How It Works", href: "#how-it-works" },
   { label: "Pricing", href: "#pricing" },
   { label: "Docs", href: "#" },
-]
+];
 
 export function Navbar() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/landing" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">
-            <span className="text-background font-bold text-sm">N</span>
-          </div>
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            className="rounded-md"
+            src="/logo.png"
+            alt="NextGen Logo"
+            width={32}
+            height={32}
+          />
           <span className="font-semibold text-lg">NextGen</span>
         </Link>
 
@@ -42,7 +47,7 @@ export function Navbar() {
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-3">
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/dashboard">Log In</Link>
+            <Link href="/auth/login">Log In</Link>
           </Button>
           <Button size="sm" className="rounded-full" asChild>
             <Link href="/dashboard">Get Started</Link>
@@ -54,7 +59,11 @@ export function Navbar() {
           className="md:hidden p-2 text-muted-foreground hover:text-foreground"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {mobileMenuOpen ? (
+            <X className="h-5 w-5" />
+          ) : (
+            <Menu className="h-5 w-5" />
+          )}
         </button>
       </nav>
 
@@ -73,8 +82,12 @@ export function Navbar() {
               </Link>
             ))}
             <div className="pt-4 border-t border-border/50 space-y-2">
-              <Button variant="outline" className="w-full bg-transparent" asChild>
-                <Link href="/dashboard">Log In</Link>
+              <Button
+                variant="outline"
+                className="w-full bg-transparent"
+                asChild
+              >
+                <Link href="/auth/login">Log In</Link>
               </Button>
               <Button className="w-full" asChild>
                 <Link href="/dashboard">Get Started</Link>
@@ -84,5 +97,5 @@ export function Navbar() {
         </div>
       )}
     </header>
-  )
+  );
 }

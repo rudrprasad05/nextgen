@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using backend.Models.DTO;
+using Backend.Models.DTO;
 
-namespace backend.Models.Request
+namespace Backend.Models.Request
 {
     public class CreateUserRequestDto
     {

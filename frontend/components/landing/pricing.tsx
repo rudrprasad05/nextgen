@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Check, ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
 
 const features = [
@@ -19,7 +19,7 @@ export function Pricing() {
       <div className="max-w-4xl mx-auto">
         {/* Section header */}
         <div className="text-center mb-16">
-          <p className="text-sm font-medium text-cyan-400 mb-3">Pricing</p>
+          <p className="text-sm font-medium text-purple-400 mb-3">Pricing</p>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 text-balance">
             Pay once, own forever
           </h2>
@@ -32,7 +32,7 @@ export function Pricing() {
         {/* Pricing card */}
         <div className="relative max-w-lg mx-auto">
           {/* Glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-cyan-400/10 rounded-3xl blur-xl" />
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-purple-400/10 rounded-3xl blur-xl" />
 
           <div className="relative p-8 md:p-10 rounded-3xl border border-border/50 bg-card/50 backdrop-blur">
             <div className="text-center mb-8">
@@ -51,8 +51,8 @@ export function Pricing() {
             <ul className="space-y-3 mb-8">
               {features.map((feature) => (
                 <li key={feature} className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full bg-cyan-400/10 flex items-center justify-center shrink-0">
-                    <Check className="w-3 h-3 text-cyan-400" />
+                  <div className="w-5 h-5 rounded-full bg-purple-400/10 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3 text-purple-400" />
                   </div>
                   <span className="text-sm">{feature}</span>
                 </li>

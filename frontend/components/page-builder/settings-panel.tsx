@@ -1,0 +1,44 @@
+"use client";
+
+import { useSite } from "@/context/SiteContext";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+
+export default function SettingPenal() {
+  const { site, currentPage } = useSite();
+  return (
+    <div className="w-72 bg-background border-l border-border p-4 overflow-y-auto">
+      <section className="space-y-6">
+        <div className="space-y-3">
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            Site
+          </h3>
+          <div className="space-y-2">
+            <Label htmlFor="content" className="text-xs">
+              Name
+            </Label>
+
+            <Input
+              id="content"
+              value={site?.name || ""}
+              // onChange={(e) => updateProp("content", e.target.value)}
+              className="h-8 text-sm"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="content" className="text-xs">
+              URL
+            </Label>
+
+            <Input
+              id="content"
+              value={site?.slug || ""}
+              // onChange={(e) => updateProp("content", e.target.value)}
+              className="h-8 text-sm"
+            />
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}

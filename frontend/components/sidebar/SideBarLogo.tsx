@@ -1,7 +1,7 @@
 "use client";
 
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/context/UserContext";
+import { useAuth } from "@/context/AuthContext";
 import { HandCoins, Wrench } from "lucide-react";
 import { useParams } from "next/navigation";
 
