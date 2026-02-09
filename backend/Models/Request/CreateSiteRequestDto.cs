@@ -19,8 +19,7 @@ namespace Backend.Models.Request
 
         // base64 data URL
         public IFormFile? Favicon { get; set; }
-
-        public SiteStatus Status { get; set; } = SiteStatus.Draft;
+        public bool IsPublished { get; set; }
     }
 
 }

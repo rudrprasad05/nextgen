@@ -11,7 +11,6 @@ namespace Backend.Models.DTO
         public string Name { get; set; } = null!;
         public string Slug { get; set; } = null!;
         public string OwnerId { get; set; } = null!;
-        public SiteStatus Status { get; set; } = SiteStatus.Draft;
         public MediaDto? Screenshot { get; set; } = null;
         public Guid? ScreenshotId { get; set; } = null;
         public long? NumberOfPages { get; set; } = 0;
@@ -22,7 +21,6 @@ namespace Backend.Models.DTO
         public string Name { get; set; } = null!;
         public string Slug { get; set; } = null!;
         public string OwnerId { get; set; } = null!;
-        public SiteStatus Status { get; set; } = SiteStatus.Draft;
         public MediaDto? Screenshot { get; set; } = null;
         public Guid? ScreenshotId { get; set; } = null;
         public ICollection<PageDto> Pages { get; set; } = new List<PageDto>();

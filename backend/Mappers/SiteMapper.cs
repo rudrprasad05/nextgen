@@ -41,7 +41,6 @@ namespace Backend.Mappers
                 Name = request.Name,
                 Slug = request.Slug,
                 OwnerId = request.OwnerId,
-                Status = request.Status,
                 NumberOfPages = request.Pages.Count,
 
             };
@@ -68,7 +67,6 @@ namespace Backend.Mappers
                 Name = request.Name,
                 Slug = request.Slug,
                 OwnerId = request.OwnerId,
-                Status = request.Status,
                 NumberOfPages = request.Pages.Count,
 
             };

@@ -37,17 +37,7 @@ namespace Backend.Mappers
                 CreatedOn = DateTime.UtcNow
             };
 
-            if (!dto.SiteAccess.AllSites)
-            {
-                foreach (var site in dto.SiteAccess.Sites)
-                {
-                    user.Sites.Add(new SiteUser
-                    {
-                        SiteId = site.SiteId,
-                        // Permissions = site.Permissions
-                    });
-                }
-            }
+
 
             return user;
         }

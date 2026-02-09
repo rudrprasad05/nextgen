@@ -54,32 +54,57 @@ namespace Backend.Repositories
                 return ApiResponse<PageDto>.NotFound(message: "Site not found or inaccessible");
             }
 
-            // Create the page model
+            var pageGuid = Guid.NewGuid();
+            var rootElement = new ElementNode
+            {
+                Id = "body",
+                Type = ElementType.Body,
+                Props = new Dictionary<string, object>(),
+                Children = new List<ElementNode>(),
+                Styles = new ElementStyles
+                {
+                    // Layout
+                    Padding = "10px",
+                    Margin = "0",
+                    MinHeight = "100vh",
+                    BoxSizing = "border-box",
+
+                    // Colors
+                    Background = "#ffffff",
+                    Color = "#000000",
+
+                    // Typography
+                    FontFamily = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                    FontSize = "16px",
+                    LineHeight = "1.6",
+                    FontWeight = "400"
+                }
+            };
+            var pageSchemaVersion = new PageSchemaVersion
+            {
+                Version = 1,
+                CreatedByUserId = null,
+                IsPublished = false,
+                PageId = pageGuid,
+                PageSchema = new PageSchema
+                {
+                    Root = rootElement
+                }
+            };
+            var metaData = new MetaDataModel
+            {
+                Title = dto.Title,
+                Description = dto.MetaDescription,
+            };
             var page = new Page
             {
-                Id = Guid.NewGuid(),
-                SiteId = site.Id,
-                Title = dto.Title,
-                Slug = dto.Slug ?? GenerateSlug(dto.Title),
+                Id = pageGuid,
+                MetaData = metaData,
+                Slug = GenerateSlug(dto.Title),
                 Status = PageStatus.Draft,
                 CreatedOn = DateTime.UtcNow,
                 UpdatedOn = DateTime.UtcNow,
-                IsDeleted = false,
-                Schema = new PageSchema
-                {
-                    Root = new ElementNode
-                    {
-                        Id = "body",
-                        Type = ElementType.Body,
-                        Props = new Dictionary<string, object>(),
-                        Children = new List<ElementNode>()
-                    },
-                    MetaData = new MetaDataModel
-                    {
-                        Title = dto.Title,
-                        Description = dto.Title
-                    }
-                }
+                CurrentSchemaVersion = pageSchemaVersion
             };
 
             // Add to database

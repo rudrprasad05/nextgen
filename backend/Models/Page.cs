@@ -14,15 +14,17 @@ namespace Backend.Models
 
     public class Page : BaseModel
     {
+        public Site Site { get; set; } = null!;
         public Guid SiteId { get; set; }
-        public string Slug { get; set; } = null!;
-        public string Title { get; set; } = null!;
+        public MetaDataModel MetaData { get; set; } = new();
+        public string Slug { get; set; } = string.Empty;
         public PageStatus Status { get; set; } = PageStatus.Draft;
 
-        // Stored as JSON
-        public PageSchema Schema { get; set; } = null!;
+        public Guid CurrentSchemaVersionId { get; set; }
 
-        public Site Site { get; set; } = null!;
+        public PageSchemaVersion CurrentSchemaVersion { get; set; } = null!;
+
+        public List<PageSchemaVersion> SchemaVersions { get; set; } = new();
     }
 
 }

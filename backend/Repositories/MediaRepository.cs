@@ -71,7 +71,7 @@ namespace Backend.Repositories
                     FileName = media.FileName,
                     SizeInBytes = media.SizeInBytes,
                     ShowInGallery = media.ShowInGallery,
-                    OwnerId = media.OwnerId,
+                    UploadedByUserId = media.UploadedByUserId,
                 };
 
                 if (newMedia == null)
